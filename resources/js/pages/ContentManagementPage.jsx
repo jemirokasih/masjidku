@@ -6,14 +6,14 @@ import {
     CheckCircle2, Save, Building, MapPin, Navigation, List, ChevronRight
 } from 'lucide-react';
 
-export default function ContentManagementPage({ defaultTab = 'hero' }) {
+export default function ContentManagementPage({ defaultTab = 'beranda' }) {
     const [posts, setPosts] = useState([]);
     const [donations, setDonations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
 
-    // 9 CMS Tabs: header, hero, profil, program, kajian, sholat, berita, galeri, footer
+    // CMS Tabs per Halaman: beranda, profil, program, berita, sholat, galeri, footer
     const [activeTab, setActiveTab] = useState(defaultTab);
 
     // General CMS Settings (saves to homepage_settings & masjid_infos)
@@ -116,6 +116,10 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
                     hero_subtitle: hp.hero_subtitle || masjidRes.data.data.address || '',
                     hero_cta_text: hp.hero_cta_text || prev.hero_cta_text,
                     hero_cta_link: hp.hero_cta_link || prev.hero_cta_link,
+                    show_sholat: hp.show_sholat ?? true,
+                    show_about: hp.show_about ?? true,
+                    show_posts: hp.show_posts ?? true,
+                    show_donations: hp.show_donations ?? true,
                     topbar_text: hp.topbar_text || prev.topbar_text,
                     sholat_city: hp.sholat_city || prev.sholat_city,
                     instagram_url: soc.instagram || '',
@@ -167,6 +171,10 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
                     hero_subtitle: cmsSettings.hero_subtitle,
                     hero_cta_text: cmsSettings.hero_cta_text,
                     hero_cta_link: cmsSettings.hero_cta_link,
+                    show_sholat: cmsSettings.show_sholat,
+                    show_about: cmsSettings.show_about,
+                    show_posts: cmsSettings.show_posts,
+                    show_donations: cmsSettings.show_donations,
                     sholat_city: cmsSettings.sholat_city,
                     sholat_adjustment: cmsSettings.sholat_adjustment,
                     nav_show_berita: cmsSettings.nav_show_berita,
@@ -186,18 +194,6 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
         }
     };
 
-    const handleCreatePost = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post('/tenant/posts', postForm);
-            setShowPostModal(false);
-            setPostForm({ title: '', content: '', type: 'berita', speaker: '', event_date: '' });
-            fetchContent();
-        } catch (err) {
-            alert('Gagal menambah konten: ' + (err.response?.data?.message || err.message));
-        }
-    };
-
     const handleDeletePost = async (id) => {
         if (!confirm('Yakin ingin menghapus postingan ini?')) return;
         try {
@@ -209,15 +205,13 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
     };
 
     const tabs = [
-        { id: 'header', label: '1. Header & Navigasi', icon: Navigation },
-        { id: 'hero', label: '2. Hero / Banner', icon: Sparkles },
-        { id: 'profil', label: '3. Profil Masjid', icon: Building },
-        { id: 'program', label: '4. Program & Donasi', icon: HeartHandshake },
-        { id: 'kajian', label: '5. Kajian & Agenda', icon: BookOpenCheck },
-        { id: 'sholat', label: '6. Jadwal Sholat (API)', icon: Clock },
-        { id: 'berita', label: '7. Berita Masjid', icon: FileText },
-        { id: 'galeri', label: '8. Galeri Media', icon: Image },
-        { id: 'footer', label: '9. Footer & Sosmed', icon: Share2 },
+        { id: 'beranda', label: '🏠 Halaman Beranda', icon: Sparkles },
+        { id: 'profil', label: '🕌 Halaman Profil Masjid', icon: Building },
+        { id: 'program', label: '📋 Halaman Program DKM', icon: HeartHandshake },
+        { id: 'berita', label: '📰 Halaman Berita & Kajian', icon: FileText },
+        { id: 'sholat', label: '⏰ Halaman Jadwal Sholat', icon: Clock },
+        { id: 'galeri', label: '🖼️ Halaman Galeri Media', icon: Image },
+        { id: 'footer', label: '📍 Halaman Kontak & Footer', icon: Share2 },
     ];
 
     if (loading) {
@@ -236,10 +230,10 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
                 <div>
                     <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <BookOpenCheck className="w-5 h-5 text-emerald-600" />
-                        <span>CMS Pengelolaan Konten Website Masjid</span>
+                        <span>CMS Pengelolaan Konten Website (Halaman per Halaman)</span>
                     </h1>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        Atur struktur konten website: Header, Hero, Profil, Program, Kajian, Jadwal Sholat API, Berita, Galeri &amp; Footer.
+                        Atur konten website masjid secara rapi sesuai halaman: Beranda, Profil, Program DKM, Berita &amp; Kajian, Jadwal Sholat, Galeri, dan Kontak.
                     </p>
                 </div>
             </div>
@@ -249,11 +243,11 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
                 {/* Left Column: Vertical Sidebar Tabs */}
                 <div className="lg:col-span-1 space-y-1.5 bg-white dark:bg-[#0f172a] p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit sticky top-20">
                     <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800/80 mb-1">
-                        Menu Kelola Konten
+                        Daftar Halaman Website
                     </div>
                     {tabs.map((t) => {
                         const Icon = t.icon;
-                        const isActive = activeTab === t.id;
+                        const isActive = activeTab === t.id || (activeTab === 'hero' && t.id === 'beranda') || (activeTab === 'header' && t.id === 'beranda');
                         return (
                             <button
                                 key={t.id}
@@ -287,145 +281,121 @@ export default function ContentManagementPage({ defaultTab = 'hero' }) {
                     {/* FORM WRAPPER FOR CMS SETTINGS */}
                     <form onSubmit={handleSaveCMSSettings} className="space-y-6">
 
-                        {/* 1. HEADER & NAVIGASI */}
-                        {activeTab === 'header' && (
-                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm">
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Navigation className="w-4 h-4 text-emerald-600" />
-                            <span>Pengaturan Header & Topbar Running Text</span>
-                        </h2>
+                        {/* 1. HALAMAN BERANDA */}
+                        {(activeTab === 'beranda' || activeTab === 'hero' || activeTab === 'header') && (
+                            <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
+                                <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3 border-slate-200 dark:border-slate-800">
+                                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                                    <span>Pengaturan Content Halaman Beranda (Header Topbar, Banner &amp; Seksi)</span>
+                                </h2>
 
-                        <div className="space-y-3 text-xs">
-                            <div>
-                                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Teks Running Bar Topbar</label>
-                                <input
-                                    type="text"
-                                    value={cmsSettings.topbar_text}
-                                    onChange={(e) => setCmsSettings({ ...cmsSettings, topbar_text: e.target.value })}
-                                    placeholder="Teks pengumuman di paling atas website..."
-                                    className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
-                                />
-                            </div>
+                                <div className="space-y-4 text-xs">
+                                    {/* Running Text Topbar */}
+                                    <div>
+                                        <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Teks Running Bar Topbar Paling Atas</label>
+                                        <input
+                                            type="text"
+                                            value={cmsSettings.topbar_text}
+                                            onChange={(e) => setCmsSettings({ ...cmsSettings, topbar_text: e.target.value })}
+                                            placeholder="Teks pengumuman running text di paling atas website..."
+                                            className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                        />
+                                    </div>
 
-                            <div className="pt-2 space-y-2">
-                                <label className="block font-bold">Menu Navigasi yang Ditampilkan</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    <label className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between">
-                                        <span>Profil Masjid</span>
-                                        <input type="checkbox" checked={cmsSettings.nav_show_berita} onChange={(e) => setCmsSettings({ ...cmsSettings, nav_show_berita: e.target.checked })} className="w-4 h-4 text-emerald-600" />
-                                    </label>
-                                    <label className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between">
-                                        <span>Berita & Kajian</span>
-                                        <input type="checkbox" checked={cmsSettings.nav_show_kajian} onChange={(e) => setCmsSettings({ ...cmsSettings, nav_show_kajian: e.target.checked })} className="w-4 h-4 text-emerald-600" />
-                                    </label>
-                                    <label className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between">
-                                        <span>Donasi QRIS</span>
-                                        <input type="checkbox" checked={cmsSettings.nav_show_donasi} onChange={(e) => setCmsSettings({ ...cmsSettings, nav_show_donasi: e.target.checked })} className="w-4 h-4 text-emerald-600" />
-                                    </label>
+                                    {/* Headline & Subtitle Hero Banner */}
+                                    <div className="pt-2 space-y-3">
+                                        <div>
+                                            <label className="block font-bold mb-1">Judul Headline Banner Utama *</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={cmsSettings.hero_title}
+                                                onChange={(e) => setCmsSettings({ ...cmsSettings, hero_title: e.target.value })}
+                                                placeholder="Selamat Datang di Official Portal Resmi Masjid..."
+                                                className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block font-bold mb-1">Sub-Judul / Subtitle Deskripsi Banner</label>
+                                            <textarea
+                                                rows="2"
+                                                value={cmsSettings.hero_subtitle}
+                                                onChange={(e) => setCmsSettings({ ...cmsSettings, hero_subtitle: e.target.value })}
+                                                placeholder="Deskripsi singkat yang tampil di bawah judul utama..."
+                                                className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                            ></textarea>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block font-bold mb-1">Teks Tombol Call-to-Action</label>
+                                                <input
+                                                    type="text"
+                                                    value={cmsSettings.hero_cta_text}
+                                                    onChange={(e) => setCmsSettings({ ...cmsSettings, hero_cta_text: e.target.value })}
+                                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block font-bold mb-1">Link Tujuan Tombol CTA</label>
+                                                <input
+                                                    type="text"
+                                                    value={cmsSettings.hero_cta_link}
+                                                    onChange={(e) => setCmsSettings({ ...cmsSettings, hero_cta_link: e.target.value })}
+                                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-mono"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Visibilitas Seksi Beranda */}
+                                    <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                                        <label className="block font-bold text-slate-900 dark:text-white">Pengaturan Visibilitas Seksi Beranda</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                                <span>Tampilkan Widget Jadwal Sholat</span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={cmsSettings.show_sholat}
+                                                    onChange={(e) => setCmsSettings({ ...cmsSettings, show_sholat: e.target.checked })}
+                                                    className="w-4 h-4 text-emerald-600 rounded"
+                                                />
+                                            </label>
+                                            <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                                <span>Tampilkan Seksi Profil &amp; Sejarah</span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={cmsSettings.show_about}
+                                                    onChange={(e) => setCmsSettings({ ...cmsSettings, show_about: e.target.checked })}
+                                                    className="w-4 h-4 text-emerald-600 rounded"
+                                                />
+                                            </label>
+                                            <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                                <span>Tampilkan Seksi Berita &amp; Kajian</span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={cmsSettings.show_posts}
+                                                    onChange={(e) => setCmsSettings({ ...cmsSettings, show_posts: e.target.checked })}
+                                                    className="w-4 h-4 text-emerald-600 rounded"
+                                                />
+                                            </label>
+                                            <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                                <span>Tampilkan Seksi Program DKM</span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={cmsSettings.show_donations}
+                                                    onChange={(e) => setCmsSettings({ ...cmsSettings, show_donations: e.target.checked })}
+                                                    className="w-4 h-4 text-emerald-600 rounded"
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                )}
+                        )}
 
-                {/* 2. HERO / BANNER */}
-                {activeTab === 'hero' && (
-                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm">
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-emerald-600" />
-                            <span>Pengaturan Banner Utama (Hero Section)</span>
-                        </h2>
-
-                        <div className="space-y-3 text-xs">
-                            <div>
-                                <label className="block font-bold mb-1">Judul Headline Hero *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={cmsSettings.hero_title}
-                                    onChange={(e) => setCmsSettings({ ...cmsSettings, hero_title: e.target.value })}
-                                    className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block font-bold mb-1">Sub-Judul / Subtitle Banner</label>
-                                <textarea
-                                    rows="2"
-                                    value={cmsSettings.hero_subtitle}
-                                    onChange={(e) => setCmsSettings({ ...cmsSettings, hero_subtitle: e.target.value })}
-                                    className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
-                                ></textarea>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block font-bold mb-1">Teks Tombol CTA</label>
-                                    <input
-                                        type="text"
-                                        value={cmsSettings.hero_cta_text}
-                                        onChange={(e) => setCmsSettings({ ...cmsSettings, hero_cta_text: e.target.value })}
-                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block font-bold mb-1">Link Tujuan CTA</label>
-                                    <input
-                                        type="text"
-                                        value={cmsSettings.hero_cta_link}
-                                        onChange={(e) => setCmsSettings({ ...cmsSettings, hero_cta_link: e.target.value })}
-                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-mono"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Visibilitas Seksi Beranda */}
-                            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
-                                <label className="block font-bold text-slate-900 dark:text-white">Pengaturan Visibilitas Seksi Beranda</label>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
-                                        <span>Tampilkan Widget Jadwal Sholat</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={cmsSettings.show_sholat}
-                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_sholat: e.target.checked })}
-                                            className="w-4 h-4 text-emerald-600 rounded"
-                                        />
-                                    </label>
-                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
-                                        <span>Tampilkan Seksi Profil &amp; Sejarah</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={cmsSettings.show_about}
-                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_about: e.target.checked })}
-                                            className="w-4 h-4 text-emerald-600 rounded"
-                                        />
-                                    </label>
-                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
-                                        <span>Tampilkan Seksi Berita &amp; Kajian</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={cmsSettings.show_posts}
-                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_posts: e.target.checked })}
-                                            className="w-4 h-4 text-emerald-600 rounded"
-                                        />
-                                    </label>
-                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
-                                        <span>Tampilkan Seksi Donasi QRIS</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={cmsSettings.show_donations}
-                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_donations: e.target.checked })}
-                                            className="w-4 h-4 text-emerald-600 rounded"
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* 3. PROFIL MASJID */}
+                        {/* 3. PROFIL MASJID */}
                 {activeTab === 'profil' && (
                     <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
                         <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3 border-slate-200 dark:border-slate-800">

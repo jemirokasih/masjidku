@@ -6,6 +6,8 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
+- **Pengelompokan CMS Kelola Konten Halaman per Halaman**:
+  - Mengorganisir menu kelola konten pada `ContentManagementPage.jsx` menjadi 7 kategori tab **Halaman per Halaman** yang intuitif (*🏠 Halaman Beranda, 🕌 Halaman Profil Masjid, 📋 Halaman Program DKM, 📰 Halaman Berita & Kajian, ⏰ Halaman Jadwal Sholat, 🖼️ Halaman Galeri Media, 📍 Halaman Kontak & Footer*).
 - **Unifikasi Pengaturan Hero Banner CMS**:
   - Menyatukan 2 form pengaturan banner menjadi 1 pusat kendali tunggal di `ContentManagementPage.jsx` pada tab *2. Banner Utama (Hero Section)*.
   - Form kini mencakup Judul Headline, Sub-judul, Teks CTA & Link Tujuan, serta saklar visibilitas seksi beranda (*Jadwal Sholat, Profil & Sejarah, Berita & Kajian, Donasi QRIS*).

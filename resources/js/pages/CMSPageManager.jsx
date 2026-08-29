@@ -6,5 +6,5 @@ import ContentManagementPage from './ContentManagementPage';
  * defaulting to Tab 2: Banner Hero & Tampilan Website.
  */
 export default function CMSPageManager() {
-    return <ContentManagementPage defaultTab="hero" />;
+    return <ContentManagementPage defaultTab="beranda" />;
 }
