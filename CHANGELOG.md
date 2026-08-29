@@ -6,9 +6,9 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
-- **Sidebar Accordion Kelola Konten Per Halaman**:
-  - Mengubah label menu accordion sidebar dari *Kelola CMS & Tampilan* menjadi **📝 Kelola Konten** di bawah grup **CMS WEBSITE** (`MainLayout.jsx`).
-  - Menghadirkan submenu dropdown langsung per halaman website: *Beranda, Profile Masjid, Program DKM, Berita & Kajian, Jadwal Sholat, Galeri Media, Kontak & Footer*.
+- **Penyederhanaan Layout CMS (Menghapus Inner Vertical Tab)**:
+  - Menghapus kolom tab vertikal di dalam `ContentManagementPage.jsx` karena seluruh navigasi halaman sudah terintegrasi secara langsung melalui dropdown menu sidebar **📝 Kelola Konten**.
+  - Mengubah tampilan form editor CMS menjadi 100% *full-width* (`max-w-5xl`) yang bersih, lega, dan fokus.
 - **Pengelompokan CMS Kelola Konten Halaman per Halaman**:
   - Mengorganisir menu kelola konten pada `ContentManagementPage.jsx` menjadi 7 kategori tab **Halaman per Halaman** yang intuitif (*🏠 Halaman Beranda, 🕌 Halaman Profil Masjid, 📋 Halaman Program DKM, 📰 Halaman Berita & Kajian, ⏰ Halaman Jadwal Sholat, 🖼️ Halaman Galeri Media, 📍 Halaman Kontak & Footer*).
 - **Unifikasi Pengaturan Hero Banner CMS**:
