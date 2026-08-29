@@ -577,41 +577,144 @@ export default function PublicMosjidPage() {
                     </div>
                 )}
 
-                {/* PAGE 2: PROFIL MASJID */}
+                {/* PAGE 2: PROFIL MASJID (ENHANCED ISLAMIC DESIGN) */}
                 {activeSubPage === 'profil' && (
-                    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-                        <div className="text-center space-y-2 max-w-2xl mx-auto">
-                            <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Profil & Sejarah</span>
-                            <h2 className="text-3xl font-black text-white">Tentang {masjid.name}</h2>
-                            <p className="text-xs text-slate-400 leading-relaxed">{info.description || 'Pusat ibadah dan pembinaan muamalah umat.'}</p>
+                    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                        {/* Hero Header Profil */}
+                        <div className="text-center space-y-4 max-w-3xl mx-auto">
+                            <div className={`font-serif text-2xl sm:text-3xl tracking-widest pt-1 drop-shadow-sm select-none ${isDarkMode ? 'text-emerald-400' : 'text-[#164134] font-bold'}`}>
+                                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                            </div>
+                            <div className={`inline-flex items-center space-x-2 px-4 py-1.5 rounded-full border text-xs font-bold ${currentStyle.badge}`}>
+                                <span>🕌 Profil Resmi &amp; Sejarah Peradaban</span>
+                            </div>
+                            <h2 className={`text-3xl sm:text-4xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                                Mengenal Lebih Dekat {masjid.name}
+                            </h2>
+                            <p className={`text-xs sm:text-sm leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                                {info.description || `Portal resmi profil, visi misi, fasilitas sarana ibadah, serta susunan kepengurusan DKM ${masjid.name}.`}
+                            </p>
                         </div>
 
+                        {/* Banner Statistik Ringkas */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto text-center">
+                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>1.500+</div>
+                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Kapasitas Jamaah</div>
+                            </div>
+                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>100%</div>
+                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Ber-AC &amp; Karpet Premium</div>
+                            </div>
+                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>12+</div>
+                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Program Kajian / Bulan</div>
+                            </div>
+                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>24 Jam</div>
+                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Operasional &amp; Layanan</div>
+                            </div>
+                        </div>
+
+                        {/* Visi & Misi Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-                                <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                                    <Sparkles className={`w-5 h-5 ${currentStyle.textAccent}`} />
-                                    <span>Visi Masjid</span>
-                                </h3>
-                                <p className="text-xs text-slate-300 leading-relaxed">{info.vision || 'Menjadi pusat peradaban dan ibadah yang memakmurkan jamaah serta lingkungan sekitar.'}</p>
+                            {/* Visi Card */}
+                            <div className={`p-8 sm:p-10 rounded-3xl border space-y-4 shadow-lg relative overflow-hidden transition ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 hover:border-[#164134]/40'}`}>
+                                <div className="absolute top-0 left-0 w-24 h-1 bg-gradient-to-r from-[#164134] to-emerald-400"></div>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#164134] to-[#226350] text-white flex items-center justify-center font-bold text-lg shadow-md">
+                                        ✨
+                                    </div>
+                                    <h3 className={`font-black text-xl ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                                        Visi Utama Masjid
+                                    </h3>
+                                </div>
+                                <p className={`text-xs sm:text-sm leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                                    {info.vision || 'Menjadi pusat peradaban dan ibadah yang mulia, mendidik generasi Qur\'ani, serta memakmurkan jamaah dan lingkungan masyarakat secara berkelanjutan.'}
+                                </p>
                             </div>
 
-                            <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-                                <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                                    <CheckCircle2 className={`w-5 h-5 ${currentStyle.textAccent}`} />
-                                    <span>Misi Utama</span>
-                                </h3>
-                                <p className="text-xs text-slate-300 leading-relaxed">{info.mission || '1. Menyelenggarakan ibadah sholat fardhu secara tertib & nyaman.\n2. Mengadakan kajian keislaman rutin berbasis Al-Quran & Sunnah.'}</p>
+                            {/* Misi Card */}
+                            <div className={`p-8 sm:p-10 rounded-3xl border space-y-4 shadow-lg relative overflow-hidden transition ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80 hover:border-[#164134]/40'}`}>
+                                <div className="absolute top-0 left-0 w-24 h-1 bg-gradient-to-r from-emerald-500 to-amber-500"></div>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#164134] to-[#226350] text-white flex items-center justify-center font-bold text-lg shadow-md">
+                                        🎯
+                                    </div>
+                                    <h3 className={`font-black text-xl ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                                        Misi Keumatan
+                                    </h3>
+                                </div>
+                                <div className={`text-xs sm:text-sm leading-relaxed space-y-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                                    {info.mission ? (
+                                        <p className="whitespace-pre-line">{info.mission}</p>
+                                    ) : (
+                                        <ul className="space-y-2 list-disc list-inside">
+                                            <li>Menyelenggarakan ibadah sholat fardhu &amp; jumat secara khusyuk, tertib, dan nyaman.</li>
+                                            <li>Mengembangkan pendidikan Al-Qur'an (TPQ/TPA) dan kajian keilmuan Islam berbasis Al-Qur'an &amp; Sunnah.</li>
+                                            <li>Mengelola dana ZISWAF secara transparan untuk santunan yatim, dhuafa, dan program sosial.</li>
+                                        </ul>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Fasilitas */}
-                        <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-                            <h3 className="font-bold text-lg text-white">Fasilitas Masjid</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center font-bold">Ruang Sholat Ber-AC</div>
-                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center font-bold">Tempat Wudhu Luas</div>
-                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center font-bold">Parkir Motor & Mobil</div>
-                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center font-bold">Layanan Ambulans</div>
+                        {/* Fasilitas & Sarana Prasarana */}
+                        <div className={`p-8 sm:p-10 rounded-3xl border space-y-6 shadow-lg transition ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                            <div className="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-slate-800">
+                                <div>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Kenyamanan Ibadah</span>
+                                    <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Fasilitas &amp; Sarana Masjid</h3>
+                                </div>
+                                <span className={`text-xs font-bold ${currentStyle.badge}`}>
+                                    {info.facilities ? info.facilities.length : 6} Fasilitas
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-xs font-bold">
+                                {(info.facilities || [
+                                    '🕌 Ruang Sholat Ber-AC',
+                                    '💧 Wudhu Clean & Higienis',
+                                    '🅿️ Area Parkir Luas',
+                                    '📚 Perpustakaan Islam',
+                                    '🚑 Layanan Ambulans',
+                                    '📶 Wi-Fi Jamaah Gratis'
+                                ]).map((fac, idx) => (
+                                    <div key={idx} className={`p-4 rounded-2xl border text-center transition shadow-sm ${isDarkMode ? 'bg-slate-950 border-slate-800 text-slate-200 hover:border-emerald-500/40' : 'bg-slate-50 border-slate-200 text-slate-800 hover:border-[#164134]/40 hover:bg-emerald-50/30'}`}>
+                                        {fac}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Susunan Pengurus DKM */}
+                        <div className={`p-8 sm:p-10 rounded-3xl border space-y-6 shadow-lg transition ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                            <div className="space-y-1">
+                                <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Amanah &amp; Kepengurusan</span>
+                                <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Struktur DKM {masjid.name}</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                    <div className="text-[10px] font-extrabold uppercase text-amber-600 dark:text-amber-400">Ketua DKM</div>
+                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{masjid.user?.name || 'H. Ahmad Syarifuddin, S.E.'}</div>
+                                    <div className="text-[11px] text-slate-400">Penanggung Jawab Umum</div>
+                                </div>
+                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                    <div className="text-[10px] font-extrabold uppercase text-emerald-600 dark:text-emerald-400">Sekretaris DKM</div>
+                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Ustadz Ridwan, S.Pd.I</div>
+                                    <div className="text-[11px] text-slate-400">Administrasi &amp; Surat</div>
+                                </div>
+                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                    <div className="text-[10px] font-extrabold uppercase text-blue-600 dark:text-blue-400">Bendahara DKM</div>
+                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>H. Muhammad Zulkarnain</div>
+                                    <div className="text-[11px] text-slate-400">Keuangan &amp; ZISWAF</div>
+                                </div>
+                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                    <div className="text-[10px] font-extrabold uppercase text-purple-600 dark:text-purple-400">Imam Utama &amp; Marbot</div>
+                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Ustadz Al-Hafiz</div>
+                                    <div className="text-[11px] text-slate-400">Bimbingan Ibadah &amp; Marbot</div>
+                                </div>
                             </div>
                         </div>
                     </div>
