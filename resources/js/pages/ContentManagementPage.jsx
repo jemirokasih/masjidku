@@ -4,7 +4,8 @@ import api from '../api/axios';
 import { 
     BookOpenCheck, Plus, RefreshCw, FileText, HeartHandshake, 
     Trash2, Layout, Sparkles, Clock, Image, Globe, Share2, 
-    CheckCircle2, Save, Building, MapPin, Navigation, List, ChevronRight
+    CheckCircle2, Save, Building, MapPin, Navigation, List, ChevronRight,
+    Search, Edit3, ChevronLeft, SlidersHorizontal, X, Filter
 } from 'lucide-react';
 
 export default function ContentManagementPage({ defaultTab = 'beranda' }) {
@@ -17,6 +18,22 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
+
+    // Program DKM Mikrotek CRUD Table State
+    const [programSearch, setProgramSearch] = useState('');
+    const [programCategoryFilter, setProgramCategoryFilter] = useState('');
+    const [programStatusFilter, setProgramStatusFilter] = useState('');
+    const [programPage, setProgramPage] = useState(1);
+    const [programPerPage, setProgramPerPage] = useState(5);
+    const [showProgramModal, setShowProgramModal] = useState(false);
+    const [editingProgramIndex, setEditingProgramIndex] = useState(null);
+    const [programForm, setProgramForm] = useState({
+        title: '',
+        category: 'Pendidikan Anak',
+        schedule: '',
+        description: '',
+        status: 'Aktif'
+    });
 
     // CMS Tabs per Halaman: beranda, profil, program, berita, sholat, galeri, footer
     const activeTab = tab || tabParam || defaultTab;
@@ -240,6 +257,56 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
             alert('Gagal menghapus konten.');
         }
     };
+
+    // Modal Program DKM Handlers
+    const handleOpenAddProgram = () => {
+        setEditingProgramIndex(null);
+        setProgramForm({
+            title: '',
+            category: 'Pendidikan Anak',
+            schedule: '',
+            description: '',
+            status: 'Aktif'
+        });
+        setShowProgramModal(true);
+    };
+
+    const handleOpenEditProgram = (prog, realIdx) => {
+        setEditingProgramIndex(realIdx);
+        setProgramForm({ ...prog });
+        setShowProgramModal(true);
+    };
+
+    const handleSaveProgramModal = (e) => {
+        e.preventDefault();
+        const updated = [...(cmsSettings.programs || [])];
+        if (editingProgramIndex !== null) {
+            updated[editingProgramIndex] = { ...programForm };
+        } else {
+            updated.push({ ...programForm });
+        }
+        setCmsSettings({ ...cmsSettings, programs: updated });
+        setShowProgramModal(false);
+    };
+
+    const handleDeleteProgram = (realIdx) => {
+        if (!confirm('Yakin ingin menghapus program DKM ini?')) return;
+        const updated = cmsSettings.programs.filter((_, i) => i !== realIdx);
+        setCmsSettings({ ...cmsSettings, programs: updated });
+    };
+
+    // Filtered & Paginated Program Data for Mikrotek Table
+    const allProgramsWithIndex = (cmsSettings.programs || []).map((p, i) => ({ ...p, _realIndex: i }));
+    const filteredPrograms = allProgramsWithIndex.filter(p => {
+        const matchSearch = !programSearch || p.title.toLowerCase().includes(programSearch.toLowerCase()) || (p.description || '').toLowerCase().includes(programSearch.toLowerCase());
+        const matchCat = !programCategoryFilter || p.category === programCategoryFilter;
+        const matchStat = !programStatusFilter || p.status === programStatusFilter;
+        return matchSearch && matchCat && matchStat;
+    });
+
+    const totalProgramCount = filteredPrograms.length;
+    const totalProgramPages = Math.ceil(totalProgramCount / programPerPage) || 1;
+    const paginatedPrograms = filteredPrograms.slice((programPage - 1) * programPerPage, programPage * programPerPage);
 
     const tabs = [
         { id: 'beranda', label: '🏠 Halaman Beranda', icon: Sparkles },
@@ -639,136 +706,224 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
                     </div>
                 )}
 
-                {/* 4. PROGRAM DKM & INFAQ */}
+                {/* 4. PROGRAM DKM & INFAQ (MIKROTEK CRUD TABLE LAYOUT) */}
                 {activeTab === 'program' && (
-                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
-                        {/* Section 1: Dynamic Programs DKM CRUD */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
+                    <div className="space-y-6">
+                        {/* Mikrotek CRUD Card Container */}
+                        <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-5 shadow-sm">
+                            {/* Top Action Header */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 border-slate-200 dark:border-slate-800">
                                 <div>
-                                    <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                        <HeartHandshake className="w-4 h-4 text-emerald-600" />
-                                        <span>Manajemen Program Kegiatan DKM (TPQ, Pesantren Kilat, dll)</span>
+                                    <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                                        <HeartHandshake className="w-5 h-5 text-emerald-600" />
+                                        <span>Daftar Program Pembinaan &amp; Kegiatan DKM</span>
                                     </h2>
-                                    <p className="text-xs text-slate-500 mt-0.5">Tambah, edit, dan atur program pembinaan &amp; kegiatan rutin DKM masjid Anda.</p>
+                                    <p className="text-xs text-slate-500 mt-0.5">
+                                        Kelola program rutin DKM (TPQ Al-Qur'an, Pesantren Kilat, Jumat Berkah, Kajian, dll) dengan filter &amp; pencarian.
+                                    </p>
                                 </div>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        const updated = [...(cmsSettings.programs || [])];
-                                        updated.push({
-                                            title: 'Program Baru DKM',
-                                            category: 'Pendidikan / Sosial',
-                                            schedule: 'Jadwal / Waktu Rutin',
-                                            description: 'Deskripsi penjelasan kegiatan program DKM...',
-                                            status: 'Aktif'
-                                        });
-                                        setCmsSettings({ ...cmsSettings, programs: updated });
-                                    }}
-                                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-sm transition shrink-0"
+                                    onClick={handleOpenAddProgram}
+                                    className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center space-x-2 shadow-md shadow-emerald-600/20 transition shrink-0 self-start sm:self-auto"
                                 >
                                     <Plus className="w-4 h-4" />
                                     <span>Tambah Program DKM</span>
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {(cmsSettings.programs || []).map((prog, idx) => (
-                                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border space-y-3 relative group">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Judul Program (e.g. TPQ Al-Qur'an)"
-                                                value={prog.title}
-                                                onChange={(e) => {
-                                                    const updated = [...cmsSettings.programs];
-                                                    updated[idx].title = e.target.value;
-                                                    setCmsSettings({ ...cmsSettings, programs: updated });
-                                                }}
-                                                className="w-full p-2.5 bg-white dark:bg-slate-900 border rounded-xl font-black text-sm text-[#164134] dark:text-emerald-400"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const updated = cmsSettings.programs.filter((_, i) => i !== idx);
-                                                    setCmsSettings({ ...cmsSettings, programs: updated });
-                                                }}
-                                                className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition shrink-0"
-                                                title="Hapus Program ini"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
+                            {/* Toolbar Filter & Search Bar */}
+                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs">
+                                {/* Search Bar */}
+                                <div className="sm:col-span-5 relative">
+                                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                                    <input
+                                        type="text"
+                                        placeholder="Cari nama program atau deskripsi..."
+                                        value={programSearch}
+                                        onChange={(e) => {
+                                            setProgramSearch(e.target.value);
+                                            setProgramPage(1);
+                                        }}
+                                        className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-slate-100 font-medium"
+                                    />
+                                </div>
 
-                                        <div className="grid grid-cols-2 gap-2 text-xs">
-                                            <div>
-                                                <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Kategori Program</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Kategori (e.g. Pendidikan)"
-                                                    value={prog.category}
-                                                    onChange={(e) => {
-                                                        const updated = [...cmsSettings.programs];
-                                                        updated[idx].category = e.target.value;
-                                                        setCmsSettings({ ...cmsSettings, programs: updated });
-                                                    }}
-                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-bold"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Status Program</label>
-                                                <select
-                                                    value={prog.status}
-                                                    onChange={(e) => {
-                                                        const updated = [...cmsSettings.programs];
-                                                        updated[idx].status = e.target.value;
-                                                        setCmsSettings({ ...cmsSettings, programs: updated });
-                                                    }}
-                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-bold text-xs"
-                                                >
-                                                    <option value="Aktif">Aktif</option>
-                                                    <option value="Musiman">Musiman</option>
-                                                    <option value="Selesai">Selesai</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                {/* Category Filter */}
+                                <div className="sm:col-span-3">
+                                    <select
+                                        value={programCategoryFilter}
+                                        onChange={(e) => {
+                                            setProgramCategoryFilter(e.target.value);
+                                            setProgramPage(1);
+                                        }}
+                                        className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-semibold text-slate-700 dark:text-slate-300"
+                                    >
+                                        <option value="">Semua Kategori</option>
+                                        <option value="Pendidikan Anak">Pendidikan Anak</option>
+                                        <option value="Sosial & Layanan">Sosial &amp; Layanan</option>
+                                        <option value="Program Musiman">Program Musiman</option>
+                                        <option value="Kajian & Bimbingan">Kajian &amp; Bimbingan</option>
+                                    </select>
+                                </div>
 
-                                        <div className="text-xs">
-                                            <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Jadwal / Waktu Pelaksanaan</label>
-                                            <input
-                                                type="text"
-                                                placeholder="e.g. Setiap Hari Jumat Ba'da Sholat Jumat"
-                                                value={prog.schedule}
-                                                onChange={(e) => {
-                                                    const updated = [...cmsSettings.programs];
-                                                    updated[idx].schedule = e.target.value;
-                                                    setCmsSettings({ ...cmsSettings, programs: updated });
-                                                }}
-                                                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-mono"
-                                            />
-                                        </div>
+                                {/* Status Filter */}
+                                <div className="sm:col-span-3">
+                                    <select
+                                        value={programStatusFilter}
+                                        onChange={(e) => {
+                                            setProgramStatusFilter(e.target.value);
+                                            setProgramPage(1);
+                                        }}
+                                        className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-semibold text-slate-700 dark:text-slate-300"
+                                    >
+                                        <option value="">Semua Status</option>
+                                        <option value="Aktif">Aktif</option>
+                                        <option value="Musiman">Musiman</option>
+                                        <option value="Selesai">Selesai</option>
+                                    </select>
+                                </div>
 
-                                        <div className="text-xs">
-                                            <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Deskripsi Ringkas Program</label>
-                                            <textarea
-                                                rows="2"
-                                                placeholder="Penjelasan ringkas mengenai program DKM..."
-                                                value={prog.description}
-                                                onChange={(e) => {
-                                                    const updated = [...cmsSettings.programs];
-                                                    updated[idx].description = e.target.value;
-                                                    setCmsSettings({ ...cmsSettings, programs: updated });
-                                                }}
-                                                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg"
-                                            ></textarea>
-                                        </div>
+                                {/* Reset Filter Button */}
+                                {(programSearch || programCategoryFilter || programStatusFilter) && (
+                                    <div className="sm:col-span-1 flex items-center">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setProgramSearch('');
+                                                setProgramCategoryFilter('');
+                                                setProgramStatusFilter('');
+                                                setProgramPage(1);
+                                            }}
+                                            className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 text-xs font-bold flex items-center justify-center"
+                                            title="Reset Filter"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
                                     </div>
-                                ))}
+                                )}
+                            </div>
+
+                            {/* Mikrotek CRUD Data Table */}
+                            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-slate-50 dark:bg-slate-900/80 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+                                        <tr>
+                                            <th className="px-4 py-3 text-center w-12">#</th>
+                                            <th className="px-4 py-3">Nama Program &amp; Deskripsi</th>
+                                            <th className="px-4 py-3">Kategori</th>
+                                            <th className="px-4 py-3">Jadwal / Waktu</th>
+                                            <th className="px-4 py-3 text-center">Status</th>
+                                            <th className="px-4 py-3 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+                                        {paginatedPrograms.length > 0 ? (
+                                            paginatedPrograms.map((prog, idx) => {
+                                                const rowNum = (programPage - 1) * programPerPage + idx + 1;
+                                                return (
+                                                    <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                                                        <td className="px-4 py-3.5 text-center font-bold text-slate-400">{rowNum}</td>
+                                                        <td className="px-4 py-3.5 space-y-0.5">
+                                                            <div className="font-extrabold text-slate-900 dark:text-white text-xs">{prog.title}</div>
+                                                            <div className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{prog.description || '-'}</div>
+                                                        </td>
+                                                        <td className="px-4 py-3.5">
+                                                            <span className="inline-block px-2.5 py-1 rounded-lg bg-emerald-500/10 text-[#164134] dark:text-emerald-300 font-extrabold text-[11px] border border-emerald-500/20">
+                                                                {prog.category || 'Umum'}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-4 py-3.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                                                            {prog.schedule || '-'}
+                                                        </td>
+                                                        <td className="px-4 py-3.5 text-center">
+                                                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-mono border ${
+                                                                prog.status === 'Aktif'
+                                                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                                                                    : prog.status === 'Musiman'
+                                                                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400'
+                                                                    : 'bg-slate-500/10 border-slate-500/30 text-slate-500'
+                                                            }`}>
+                                                                {prog.status || 'Aktif'}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-4 py-3.5 text-right space-x-1">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleOpenEditProgram(prog, prog._realIndex)}
+                                                                className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
+                                                                title="Edit Program"
+                                                            >
+                                                                <Edit3 className="w-4 h-4" />
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleDeleteProgram(prog._realIndex)}
+                                                                className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                                                                title="Hapus Program"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="6" className="px-4 py-8 text-center text-slate-400">
+                                                    Tidak ada data program DKM yang cocok dengan pencarian / filter.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Mikrotek Pagination Footer Bar */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 pt-2">
+                                <div>
+                                    Menampilkan <strong className="text-slate-900 dark:text-white">{totalProgramCount > 0 ? (programPage - 1) * programPerPage + 1 : 0}</strong> - <strong className="text-slate-900 dark:text-white">{Math.min(programPage * programPerPage, totalProgramCount)}</strong> dari <strong className="text-slate-900 dark:text-white">{totalProgramCount}</strong> program DKM
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <select
+                                        value={programPerPage}
+                                        onChange={(e) => {
+                                            setProgramPerPage(Number(e.target.value));
+                                            setProgramPage(1);
+                                        }}
+                                        className="px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border rounded-lg font-bold text-xs"
+                                    >
+                                        <option value={5}>5 / hal</option>
+                                        <option value={10}>10 / hal</option>
+                                        <option value={25}>25 / hal</option>
+                                    </select>
+                                    <div className="flex space-x-1">
+                                        <button
+                                            type="button"
+                                            disabled={programPage <= 1}
+                                            onClick={() => setProgramPage(prev => Math.max(1, prev - 1))}
+                                            className="px-3 py-1.5 rounded-lg border font-bold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                        </button>
+                                        <span className="px-3 py-1.5 font-bold text-slate-900 dark:text-white">
+                                            {programPage} / {totalProgramPages}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            disabled={programPage >= totalProgramPages}
+                                            onClick={() => setProgramPage(prev => Math.min(totalProgramPages, prev + 1))}
+                                            className="px-3 py-1.5 rounded-lg border font-bold disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                        >
+                                            <ChevronRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         {/* Section 2: Bank Official Infaq & Donasi */}
-                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                        <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm">
                             <h3 className="text-xs font-bold text-slate-900 dark:text-white">Rekening Infaq &amp; Bank Official DKM</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                                 <div>
@@ -1047,6 +1202,85 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
                                 </button>
                                 <button type="submit" className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold">
                                     Publikasikan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {/* Modal Add / Edit Program DKM */}
+            {showProgramModal && (
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-lg space-y-4 shadow-2xl">
+                        <div className="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-800">
+                            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                                {editingProgramIndex !== null ? 'Edit Program DKM' : 'Tambah Program DKM Baru'}
+                            </h3>
+                            <button type="button" onClick={() => setShowProgramModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleSaveProgramModal} className="space-y-3 text-xs">
+                            <div>
+                                <label className="block font-bold mb-1">Judul Program *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. Taman Pendidikan Al-Qur'an (TPQ)"
+                                    value={programForm.title}
+                                    onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
+                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-bold"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block font-bold mb-1">Kategori Program</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Pendidikan Anak"
+                                        value={programForm.category}
+                                        onChange={(e) => setProgramForm({ ...programForm, category: e.target.value })}
+                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold mb-1">Status Program</label>
+                                    <select
+                                        value={programForm.status}
+                                        onChange={(e) => setProgramForm({ ...programForm, status: e.target.value })}
+                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-bold"
+                                    >
+                                        <option value="Aktif">Aktif</option>
+                                        <option value="Musiman">Musiman</option>
+                                        <option value="Selesai">Selesai</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block font-bold mb-1">Jadwal / Waktu Pelaksanaan</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Senin - Jumat, 15.30 - 17.00 WIB"
+                                    value={programForm.schedule}
+                                    onChange={(e) => setProgramForm({ ...programForm, schedule: e.target.value })}
+                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-mono"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-bold mb-1">Deskripsi Ringkas Kegiatan</label>
+                                <textarea
+                                    rows="3"
+                                    placeholder="Penjelasan ringkas mengenai sasaran & kegiatan program..."
+                                    value={programForm.description}
+                                    onChange={(e) => setProgramForm({ ...programForm, description: e.target.value })}
+                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                ></textarea>
+                            </div>
+                            <div className="flex justify-end space-x-2 pt-3">
+                                <button type="button" onClick={() => setShowProgramModal(false)} className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">
+                                    Batal
+                                </button>
+                                <button type="submit" className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-md">
+                                    Simpan Program
                                 </button>
                             </div>
                         </form>
