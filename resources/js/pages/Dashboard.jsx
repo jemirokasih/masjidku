@@ -66,42 +66,71 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Onboarding Setup Progress Banner */}
-            <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-900/40 via-teal-900/30 to-slate-900 border border-emerald-500/30 shadow-xl space-y-4 relative overflow-hidden">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
-                    <div className="space-y-1">
-                        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
-                            <Sparkles className="w-3 h-3 text-emerald-400" />
-                            <span>Panduan Onboarding Pengurus</span>
+            {/* Verification Status Banner (Approved vs Onboarding Pending) */}
+            {isApproved ? (
+                <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950 via-teal-900/60 to-slate-900 border border-emerald-500/50 shadow-xl space-y-4 relative overflow-hidden">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                        <div className="space-y-1">
+                            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-extrabold uppercase tracking-wider">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Website Resmi Aktif &amp; Terverifikasi</span>
+                            </div>
+                            <h2 className="text-lg font-extrabold text-white">
+                                Selamat! Website {masjid?.name || 'Masjid Anda'} Sudah Disetujui &amp; Online!
+                            </h2>
+                            <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                                Alamat domain <code className="text-emerald-400 font-bold font-mono">{masjid?.slug}.masjidku.id</code> telah diverifikasi oleh tim admin Masjidku dan dapat diakses publik oleh seluruh jamaah.
+                            </p>
                         </div>
-                        <h2 className="text-lg font-extrabold text-white">
-                            Selesaikan 7 Langkah Setup Website Masjid Anda
-                        </h2>
-                        <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-                            Lengkapi domain, pilih template desain, isi informasi umum masjid, dan unggah berkas verifikasi untuk mengaktifkan website resmi.
-                        </p>
+
+                        <a
+                            href={`/m/${masjid?.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 font-extrabold text-xs text-slate-950 shadow-lg shadow-emerald-500/25 flex items-center space-x-2 transition-all shrink-0"
+                        >
+                            <Globe className="w-4 h-4" />
+                            <span>Buka Website Publik</span>
+                        </a>
+                    </div>
+                </div>
+            ) : (
+                <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 border border-amber-500/30 shadow-xl space-y-4 relative overflow-hidden">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                        <div className="space-y-1">
+                            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider">
+                                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                                <span>Status: Menunggu Verifikasi Admin</span>
+                            </div>
+                            <h2 className="text-lg font-extrabold text-white">
+                                Process Setup Selesai — Menunggu Persetujuan Admin
+                            </h2>
+                            <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                                Berkas verifikasi dan data setup Anda saat ini dalam antrean peninjauan oleh tim admin Masjidku.id. Anda tetap dapat melakukan pratinjau tampilan website.
+                            </p>
+                        </div>
+
+                        <Link
+                            to="/setup"
+                            className="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 font-bold text-xs text-white shadow-lg shadow-emerald-500/25 flex items-center space-x-2 transition-all shrink-0"
+                        >
+                            <span>Lihat / Edit Setup (Langkah 7)</span>
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
                     </div>
 
-                    <Link
-                        to="/setup"
-                        className="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 font-bold text-xs text-white shadow-lg shadow-emerald-500/25 flex items-center space-x-2 transition-all shrink-0"
-                    >
-                        <span>Mulai Setup Sekarang</span>
-                        <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {/* 7-Step Progress Pills */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-2 border-t border-slate-800 text-[11px] font-bold">
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">1. Domain</div>
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">2. Template</div>
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">3. Info Masjid</div>
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">4. Verifikasi</div>
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">5. Ketentuan</div>
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">6. Pilih Paket</div>
+                        <div className="p-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-center">7. Selesai</div>
+                    </div>
                 </div>
-
-                {/* 7-Step Progress Pills */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-2 border-t border-emerald-800/40 text-[11px] font-bold">
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">1. Domain</div>
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">2. Template</div>
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">3. Info Masjid</div>
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">4. Verifikasi</div>
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">5. Ketentuan</div>
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">6. Pilih Paket</div>
-                    <div className="p-2 rounded-xl bg-slate-900/70 border border-emerald-500/30 text-emerald-300 text-center">7. Selesai</div>
-                </div>
-            </div>
+            )}
 
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

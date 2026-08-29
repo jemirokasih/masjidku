@@ -673,11 +673,19 @@ export default function SetupWizardPage() {
 
                             <div className="space-y-2 max-w-md mx-auto">
                                 <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">🎉 Setup Website Berhasil Diselesaikan!</h2>
-                                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs">
-                                    <span>Status: Menunggu Verifikasi Tim Admin</span>
-                                </div>
+                                {user?.masjid?.verification_status === 'approved' ? (
+                                    <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                                        <span>Status: ✅ Telah Disetujui &amp; Aktif</span>
+                                    </div>
+                                ) : (
+                                    <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs">
+                                        <span>Status: ⏳ Menunggu Verifikasi Tim Admin</span>
+                                    </div>
+                                )}
                                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed pt-1">
-                                    Pengaturan domain, template, dan dokumen verifikasi Anda telah tersimpan dengan aman. Anda dapat melakukan pratinjau tampilan website publik Anda sekarang juga.
+                                    {user?.masjid?.verification_status === 'approved'
+                                        ? 'Selamat! Website masjid Anda telah disetujui oleh admin Masjidku dan dapat diakses publik oleh seluruh jamaah.'
+                                        : 'Pengaturan domain, template, dan dokumen verifikasi Anda telah tersimpan dengan aman. Anda dapat melakukan pratinjau tampilan website publik Anda sekarang juga.'}
                                 </p>
                             </div>
 
@@ -688,9 +696,15 @@ export default function SetupWizardPage() {
                                 </div>
                                 <div className="flex justify-between pt-1">
                                     <span className="text-slate-500">Status Publik:</span>
-                                    <span className="text-amber-500 font-bold flex items-center gap-1">
-                                        ⏳ Menunggu Approve Admin
-                                    </span>
+                                    {user?.masjid?.verification_status === 'approved' ? (
+                                        <span className="text-emerald-600 font-bold flex items-center gap-1">
+                                            🟢 Website Live (Aktif)
+                                        </span>
+                                    ) : (
+                                        <span className="text-amber-500 font-bold flex items-center gap-1">
+                                            ⏳ Menunggu Approve Admin
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
