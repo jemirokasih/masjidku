@@ -4,6 +4,21 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ---
 
+## [v2.2.0] - 2026-08-30
+### Added & Enhanced
+- **Dynamic Content Management (CMS) untuk Profil Masjid**:
+  - Halaman **Kelola Konten CMS (`ContentManagementPage.jsx`)** pada tab *3. Profil Masjid* kini dilengkapi dengan form dinamis interaktif untuk menambah/menghapus/mengedit:
+    - **Kartu Statistik Ringkas** (e.g. *Kapasitas Jamaah*, *Karpet Premium*, *Program Kajian/Bulan*, *Operasional & Layanan*).
+    - **Daftar Fasilitas & Sarana Ibadah** (e.g. *Ruang Sholat Ber-AC*, *Tempat Wudhu Luas*, *Perpustakaan*, *Layanan Ambulans*, *Wi-Fi Jamaah*).
+    - **Struktur Kepengurusan DKM** (e.g. *Ketua DKM*, *Sekretaris*, *Bendahara*, *Imam Utama & Marbot*).
+  - Halaman publik **Profil Masjid (`PublicMosjidPage.jsx`)** secara otomatis membaca dan menampilkan data statistik, fasilitas, serta struktur DKM yang dikelola melalui CMS.
+- **Penyelarasan Design System & Halaman Al-Qur'an & Doa**:
+  - Menyelaraskan tampilan `QuranPage.jsx` dan `DoaPage.jsx` dengan kanvas eye-friendly `#f6f8f7`, gradien base `#164134`, serta toggle Mode Light & Dark.
+  - Menambahkan tombol navigasi **⬅️ Surah Sebelumya** dan **➡️ Surah Selanjutnya** di bagian atas dan bawah pembaca Al-Qur'an.
+  - Merapikan struktur menu Navbarpublik agar 100% identik dengan halaman Beranda utama.
+
+---
+
 ## [v1.8.0] - 2026-08-25
 ### Added & Changed
 - **Collapsible Navigation Groups & Sidebar Accordion**:

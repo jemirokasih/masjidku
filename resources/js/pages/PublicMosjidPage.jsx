@@ -598,22 +598,17 @@ export default function PublicMosjidPage() {
 
                         {/* Banner Statistik Ringkas */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto text-center">
-                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
-                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>1.500+</div>
-                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Kapasitas Jamaah</div>
-                            </div>
-                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
-                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>100%</div>
-                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Ber-AC &amp; Karpet Premium</div>
-                            </div>
-                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
-                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>12+</div>
-                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Program Kajian / Bulan</div>
-                            </div>
-                            <div className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
-                                <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>24 Jam</div>
-                                <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Operasional &amp; Layanan</div>
-                            </div>
+                            {(info.homepage_settings?.stats || [
+                                { label: 'Kapasitas Jamaah', value: '1.500+' },
+                                { label: 'Ber-AC & Karpet Premium', value: '100%' },
+                                { label: 'Program Kajian / Bulan', value: '12+' },
+                                { label: 'Operasional & Layanan', value: '24 Jam' }
+                            ]).map((st, idx) => (
+                                <div key={idx} className={`p-6 rounded-3xl border transition shadow-sm ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200/80'}`}>
+                                    <div className={`text-2xl sm:text-3xl font-black font-mono ${currentStyle.textAccent}`}>{st.value}</div>
+                                    <div className={`text-xs font-bold mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{st.label}</div>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Visi & Misi Section */}
@@ -695,26 +690,18 @@ export default function PublicMosjidPage() {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                                    <div className="text-[10px] font-extrabold uppercase text-amber-600 dark:text-amber-400">Ketua DKM</div>
-                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{masjid.user?.name || 'H. Ahmad Syarifuddin, S.E.'}</div>
-                                    <div className="text-[11px] text-slate-400">Penanggung Jawab Umum</div>
-                                </div>
-                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                                    <div className="text-[10px] font-extrabold uppercase text-emerald-600 dark:text-emerald-400">Sekretaris DKM</div>
-                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Ustadz Ridwan, S.Pd.I</div>
-                                    <div className="text-[11px] text-slate-400">Administrasi &amp; Surat</div>
-                                </div>
-                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                                    <div className="text-[10px] font-extrabold uppercase text-blue-600 dark:text-blue-400">Bendahara DKM</div>
-                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>H. Muhammad Zulkarnain</div>
-                                    <div className="text-[11px] text-slate-400">Keuangan &amp; ZISWAF</div>
-                                </div>
-                                <div className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                                    <div className="text-[10px] font-extrabold uppercase text-purple-600 dark:text-purple-400">Imam Utama &amp; Marbot</div>
-                                    <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Ustadz Al-Hafiz</div>
-                                    <div className="text-[11px] text-slate-400">Bimbingan Ibadah &amp; Marbot</div>
-                                </div>
+                                {(info.homepage_settings?.dkm_members || [
+                                    { role: 'Ketua DKM', name: masjid.user?.name || 'H. Ahmad Syarifuddin, S.E.', title: 'Penanggung Jawab Umum' },
+                                    { role: 'Sekretaris DKM', name: 'Ustadz Ridwan, S.Pd.I', title: 'Administrasi & Surat' },
+                                    { role: 'Bendahara DKM', name: 'H. Muhammad Zulkarnain', title: 'Keuangan & ZISWAF' },
+                                    { role: 'Imam Utama & Marbot', name: 'Ustadz Al-Hafiz', title: 'Bimbingan Ibadah & Marbot' }
+                                ]).map((mb, idx) => (
+                                    <div key={idx} className={`p-5 rounded-2xl border space-y-1 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                        <div className="text-[10px] font-extrabold uppercase text-[#164134] dark:text-emerald-400">{mb.role}</div>
+                                        <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{mb.name}</div>
+                                        <div className="text-[11px] text-slate-400">{mb.title}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

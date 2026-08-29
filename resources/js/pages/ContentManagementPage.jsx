@@ -36,7 +36,19 @@ export default function ContentManagementPage() {
         description: '',
         vision: '',
         mission: '',
-        facilities: ['Ruang Sholat Ber-AC', 'Tempat Wudhu Luas', 'Parkir Luas', 'Layanan Ambulans'],
+        stats: [
+            { label: 'Kapasitas Jamaah', value: '1.500+' },
+            { label: 'Ber-AC & Karpet Premium', value: '100%' },
+            { label: 'Program Kajian / Bulan', value: '12+' },
+            { label: 'Operasional & Layanan', value: '24 Jam' }
+        ],
+        facilities: ['Ruang Sholat Ber-AC', 'Wudhu Clean & Higienis', 'Area Parkir Luas', 'Perpustakaan Islam', 'Layanan Ambulans', 'Wi-Fi Jamaah Gratis'],
+        dkm_members: [
+            { role: 'Ketua DKM', name: 'H. Ahmad Syarifuddin, S.E.', title: 'Penanggung Jawab Umum' },
+            { role: 'Sekretaris DKM', name: 'Ustadz Ridwan, S.Pd.I', title: 'Administrasi & Surat' },
+            { role: 'Bendahara DKM', name: 'H. Muhammad Zulkarnain', title: 'Keuangan & ZISWAF' },
+            { role: 'Imam Utama & Marbot', name: 'Ustadz Al-Hafiz', title: 'Bimbingan Ibadah & Marbot' }
+        ],
 
         // 4. Program & Donasi
         bank_name: 'Bank Syariah Indonesia (BSI)',
@@ -93,7 +105,9 @@ export default function ContentManagementPage() {
                     description: info.description || prev.description,
                     vision: info.vision || prev.vision,
                     mission: info.mission || prev.mission,
-                    facilities: info.facilities || prev.facilities,
+                    facilities: info.facilities && info.facilities.length > 0 ? info.facilities : prev.facilities,
+                    stats: hp.stats && hp.stats.length > 0 ? hp.stats : prev.stats,
+                    dkm_members: hp.dkm_members && hp.dkm_members.length > 0 ? hp.dkm_members : prev.dkm_members,
                     hero_title: hp.hero_title || `Selamat Datang di Official Portal Resmi ${masjidRes.data.data.name}`,
                     hero_subtitle: hp.hero_subtitle || masjidRes.data.data.address || '',
                     hero_cta_text: hp.hero_cta_text || prev.hero_cta_text,
@@ -156,6 +170,8 @@ export default function ContentManagementPage() {
                     nav_show_donasi: cmsSettings.nav_show_donasi,
                     nav_show_galeri: cmsSettings.nav_show_galeri,
                     nav_show_kontak: cmsSettings.nav_show_kontak,
+                    stats: cmsSettings.stats,
+                    dkm_members: cmsSettings.dkm_members,
                 }
             });
             setMessage('Pengaturan konten berhasil disimpan!');
@@ -364,41 +380,238 @@ export default function ContentManagementPage() {
 
                 {/* 3. PROFIL MASJID */}
                 {activeTab === 'profil' && (
-                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm">
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
+                        <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3 border-slate-200 dark:border-slate-800">
                             <Building className="w-4 h-4 text-emerald-600" />
-                            <span>Pengaturan Profil, Sejarah, Visi & Misi</span>
+                            <span>Pengaturan Profil, Visi Misi, Statistik & Struktur DKM</span>
                         </h2>
 
-                        <div className="space-y-3 text-xs">
+                        <div className="space-y-6 text-xs">
+                            {/* Sejarah & Deskripsi */}
                             <div>
                                 <label className="block font-bold mb-1">Deskripsi Sejarah & Profil Masjid</label>
                                 <textarea
                                     rows="4"
+                                    placeholder="Jelaskan sejarah berdirinya masjid, lokasi, dan latar belakang..."
                                     value={cmsSettings.description}
                                     onChange={(e) => setCmsSettings({ ...cmsSettings, description: e.target.value })}
                                     className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
                                 ></textarea>
                             </div>
 
+                            {/* Visi & Misi */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block font-bold mb-1">Visi Masjid</label>
                                     <textarea
                                         rows="3"
+                                        placeholder="Cita-cita & Visi utama masjid..."
                                         value={cmsSettings.vision}
                                         onChange={(e) => setCmsSettings({ ...cmsSettings, vision: e.target.value })}
                                         className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
                                     ></textarea>
                                 </div>
                                 <div>
-                                    <label className="block font-bold mb-1">Misi Utama</label>
+                                    <label className="block font-bold mb-1">Misi Keumatan (Bisa Teks / Poin-poin)</label>
                                     <textarea
                                         rows="3"
+                                        placeholder="1. Menyelenggarakan ibadah khusyuk...&#10;2. Pendidikan Al-Qur'an..."
                                         value={cmsSettings.mission}
                                         onChange={(e) => setCmsSettings({ ...cmsSettings, mission: e.target.value })}
                                         className="w-full p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl"
                                     ></textarea>
+                                </div>
+                            </div>
+
+                            {/* 1. Dynamic Card Statistik (Tambah / Kurang) */}
+                            <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                                <div className="flex items-center justify-between">
+                                    <label className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                        <Sparkles className="w-4 h-4 text-amber-500" />
+                                        <span>Kartu Statistik Ringkas (Bisa Tambah / Hapus Card)</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const updated = [...(cmsSettings.stats || [])];
+                                            updated.push({ label: 'Statistik Baru', value: '100+' });
+                                            setCmsSettings({ ...cmsSettings, stats: updated });
+                                        }}
+                                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center space-x-1 shadow-sm transition"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        <span>Tambah Card Statistik</span>
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {(cmsSettings.stats || []).map((st, idx) => (
+                                        <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-900/60 border rounded-xl flex items-center gap-2">
+                                            <div className="flex-1 space-y-1">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Label (e.g. Kapasitas)"
+                                                    value={st.label}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.stats];
+                                                        updated[idx].label = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, stats: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs font-bold"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nilai (e.g. 1.500+)"
+                                                    value={st.value}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.stats];
+                                                        updated[idx].value = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, stats: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400"
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const updated = cmsSettings.stats.filter((_, i) => i !== idx);
+                                                    setCmsSettings({ ...cmsSettings, stats: updated });
+                                                }}
+                                                className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition"
+                                                title="Hapus Stat Card ini"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 2. Dynamic Fasilitas Masjid (Tambah / Kurang) */}
+                            <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                                <div className="flex items-center justify-between">
+                                    <label className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                        <Building className="w-4 h-4 text-blue-500" />
+                                        <span>Kelola Fasilitas & Sarana Ibadah</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const updated = [...(cmsSettings.facilities || [])];
+                                            updated.push('🕌 Fasilitas Baru');
+                                            setCmsSettings({ ...cmsSettings, facilities: updated });
+                                        }}
+                                        className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center space-x-1 shadow-sm transition"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        <span>Tambah Fasilitas</span>
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                    {(cmsSettings.facilities || []).map((fac, idx) => (
+                                        <div key={idx} className="p-2 bg-slate-50 dark:bg-slate-900/60 border rounded-xl flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={fac}
+                                                onChange={(e) => {
+                                                    const updated = [...cmsSettings.facilities];
+                                                    updated[idx] = e.target.value;
+                                                    setCmsSettings({ ...cmsSettings, facilities: updated });
+                                                }}
+                                                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs font-bold"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const updated = cmsSettings.facilities.filter((_, i) => i !== idx);
+                                                    setCmsSettings({ ...cmsSettings, facilities: updated });
+                                                }}
+                                                className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition shrink-0"
+                                                title="Hapus Fasilitas ini"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 3. Dynamic Susunan Pengurus DKM (Tambah / Kurang) */}
+                            <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                                <div className="flex items-center justify-between">
+                                    <label className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                        <FileText className="w-4 h-4 text-purple-500" />
+                                        <span>Struktur Kepengurusan DKM (Tambah / Hapus Pengurus)</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const updated = [...(cmsSettings.dkm_members || [])];
+                                            updated.push({ role: 'Anggota DKM', name: 'Nama Pengurus', title: 'Tugas Utama' });
+                                            setCmsSettings({ ...cmsSettings, dkm_members: updated });
+                                        }}
+                                        className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center space-x-1 shadow-sm transition"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        <span>Tambah Pengurus DKM</span>
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {(cmsSettings.dkm_members || []).map((mb, idx) => (
+                                        <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-900/60 border rounded-xl space-y-2 relative group">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Jabatan / Peran (e.g. Ketua DKM)"
+                                                    value={mb.role}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.dkm_members];
+                                                        updated[idx].role = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, dkm_members: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs font-extrabold text-[#164134] dark:text-emerald-400"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const updated = cmsSettings.dkm_members.filter((_, i) => i !== idx);
+                                                        setCmsSettings({ ...cmsSettings, dkm_members: updated });
+                                                    }}
+                                                    className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition shrink-0"
+                                                    title="Hapus Pengurus DKM ini"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nama Lengkap & Gelar"
+                                                    value={mb.name}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.dkm_members];
+                                                        updated[idx].name = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, dkm_members: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs font-bold"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Keterangan Tugas / Subtitle"
+                                                    value={mb.title}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.dkm_members];
+                                                        updated[idx].title = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, dkm_members: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg text-xs text-slate-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
