@@ -47,7 +47,13 @@ import {
     Globe,
     Mail,
     PanelLeftClose,
-    PanelLeftOpen
+    PanelLeftOpen,
+    Sparkles,
+    Building,
+    HeartHandshake,
+    BookOpenCheck,
+    Image,
+    Share2
 } from 'lucide-react';
 
 export default function MainLayout() {
@@ -157,14 +163,19 @@ export default function MainLayout() {
             ]
         },
         {
-            groupName: 'CMS & TAMPILAN WEBSITE',
+            groupName: 'CMS WEBSITE',
             items: [
                 {
-                    name: 'Kelola CMS & Tampilan',
-                    icon: Layout,
+                    name: 'Kelola Konten',
+                    icon: FileText,
                     children: [
-                        { name: 'Hero & Tema Tampilan', path: '/cms-pages', icon: Layers },
-                        { name: 'Kelola Konten Website', path: '/content', icon: FileText },
+                        { name: 'Beranda', path: '/content?tab=beranda', icon: Sparkles },
+                        { name: 'Profile Masjid', path: '/content?tab=profil', icon: Building },
+                        { name: 'Program DKM', path: '/content?tab=program', icon: HeartHandshake },
+                        { name: 'Berita & Kajian', path: '/content?tab=berita', icon: BookOpenCheck },
+                        { name: 'Jadwal Sholat', path: '/content?tab=sholat', icon: Clock },
+                        { name: 'Galeri Media', path: '/content?tab=galeri', icon: Image },
+                        { name: 'Kontak & Footer', path: '/content?tab=footer', icon: Share2 },
                     ]
                 }
             ]
@@ -179,12 +190,13 @@ export default function MainLayout() {
 
     const isActive = (path) => {
         if (!path) return false;
-        if (path === '/') return location.pathname === '/';
+        if (path === '/') return location.pathname === '/' && location.search === '';
         const [basePath, searchStr] = path.split('?');
         if (location.pathname !== basePath) return false;
         if (!searchStr) {
-            return location.search === '' || location.search === '?tab=catalog';
+            return location.search === '';
         }
+        if (location.search === '' && searchStr === 'tab=beranda') return true;
         return location.search.includes(searchStr);
     };
 

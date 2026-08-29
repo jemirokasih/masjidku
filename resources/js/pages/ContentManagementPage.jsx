@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 import { 
     BookOpenCheck, Plus, RefreshCw, FileText, HeartHandshake, 
@@ -7,6 +8,9 @@ import {
 } from 'lucide-react';
 
 export default function ContentManagementPage({ defaultTab = 'beranda' }) {
+    const [searchParams] = useSearchParams();
+    const tabParam = searchParams.get('tab');
+
     const [posts, setPosts] = useState([]);
     const [donations, setDonations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +18,13 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
     const [message, setMessage] = useState('');
 
     // CMS Tabs per Halaman: beranda, profil, program, berita, sholat, galeri, footer
-    const [activeTab, setActiveTab] = useState(defaultTab);
+    const [activeTab, setActiveTab] = useState(tabParam || defaultTab);
+
+    useEffect(() => {
+        if (tabParam) {
+            setActiveTab(tabParam);
+        }
+    }, [tabParam]);
 
     // General CMS Settings (saves to homepage_settings & masjid_infos)
     const [cmsSettings, setCmsSettings] = useState({
