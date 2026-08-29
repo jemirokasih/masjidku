@@ -10,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ClientList from './pages/Clients/ClientList';
 import ClientFormPage from './pages/Clients/ClientFormPage';
@@ -171,6 +172,14 @@ export default function App() {
                                     element={
                                         <PublicRoute>
                                             <Login />
+                                        </PublicRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/register"
+                                    element={
+                                        <PublicRoute>
+                                            <Register />
                                         </PublicRoute>
                                     }
                                 />
