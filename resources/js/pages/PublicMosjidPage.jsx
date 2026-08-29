@@ -39,11 +39,47 @@ export default function PublicMosjidPage() {
     }, []);
 
     // Determine current sub-page based on pathname
-    // pathname: /m/alikhlas/beranda or /m/alikhlas/profile or /m/alikhlas/berita etc.
+    // pathname: /m/alikhlas/beranda or /m/alikhlas/profile or /m/alikhlas/program or /m/alikhlas/berita etc.
     const rawPath = location.pathname.replace(new RegExp(`^/m/${slug}`), '').replace(/^\//, '').toLowerCase();
     let activeSubPage = rawPath || 'beranda';
     if (activeSubPage === 'profile' || activeSubPage === 'profil') activeSubPage = 'profil';
+    if (activeSubPage === 'program' || activeSubPage === 'kegiatan') activeSubPage = 'program';
     if (activeSubPage === 'berita' || activeSubPage === 'kajian') activeSubPage = 'kajian';
+
+    const samplePrograms = [
+        {
+            id: 1,
+            title: 'Taman Pendidikan Al-Qur\'an (TPQ / TPA)',
+            category: 'Pendidikan Anak',
+            schedule: 'Setiap Senin - Jumat (15.30 - 17.00 WIB)',
+            description: 'Pembelajaran membaca Al-Qur\'an metode Iqro, tajwid, hafalan doa harian, dan pembentukan adab Islami untuk anak-anak usia 5-12 tahun.',
+            status: 'Pendaftaran Buka'
+        },
+        {
+            id: 2,
+            title: 'Jumat Berkah — Berbagi Nasi & Sembako',
+            category: 'Sosial & Umat',
+            schedule: 'Setiap Hari Jumat Ba\'da Sholat Jumat',
+            description: 'Pembagian paket makan siang gratis dan bantuan sembako untuk jamaah sholat jumat, musafir, serta warga sekitar yang membutuhkan.',
+            status: 'Rutin Mingguan'
+        },
+        {
+            id: 3,
+            title: 'Pesantren Kilat & Mabit Ramadhan',
+            category: 'Karakter & Remaja',
+            schedule: 'Bulan Suci Ramadhan',
+            description: 'Kegiatan pembinaan iman, tadarus Al-Qur\'an 30 juz, ceramah kebangsaan & akhlak, serta mabit malam 10 terakhir Ramadhan.',
+            status: 'Program Tahunan'
+        },
+        {
+            id: 4,
+            title: 'Kajian Subuh Berjamaah & Sarapan Bersama',
+            category: 'Dakwah & Keilmuan',
+            schedule: 'Setiap Ahad / Minggu Subuh',
+            description: 'Kajian kitab fiqih & tafsir oleh ustadz tamu dilanjutkan ramah tamah dan sarapan bersama jamaah.',
+            status: 'Rutin Mingguan'
+        }
+    ];
 
     useEffect(() => {
         const fetchWebsiteData = async () => {
@@ -232,6 +268,12 @@ export default function PublicMosjidPage() {
                                 className={`py-5 transition ${activeSubPage === 'profil' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                             >
                                 Profil Masjid
+                            </Link>
+                            <Link 
+                                to={`/m/${slug}/program`} 
+                                className={`py-5 transition ${activeSubPage === 'program' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
+                            >
+                                Program Kegiatan
                             </Link>
                             {showPosts && (
                                 <Link 
@@ -432,42 +474,48 @@ export default function PublicMosjidPage() {
                             </div>
                         </section>
 
-                        {/* SECTION 4: PROGRAM & DONASI SECTION */}
-                        {showDonations && (
-                            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className={`p-8 sm:p-12 rounded-3xl border space-y-6 shadow-xl relative overflow-hidden transition-colors ${isDarkMode ? 'bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-950 border-emerald-500/30' : 'bg-white border-emerald-500/30 shadow-lg'}`}>
-                                    <div className="absolute top-0 right-0 w-48 h-1 bg-gradient-to-l from-amber-500 to-transparent"></div>
-                                    <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
-                                        <div>
-                                            <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Infaq &amp; Shadaqah Jariyah</span>
-                                            <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Program Donasi Masjid</h3>
-                                        </div>
-                                        <Link
-                                            to={`/m/${slug}/donasi`}
-                                            className={`px-5 py-2.5 rounded-xl font-bold text-xs shadow-md inline-flex items-center space-x-2 ${currentStyle.button}`}
-                                        >
-                                            <span>Ke Halaman Program Donasi</span>
-                                            <ChevronRight className="w-4 h-4" />
-                                        </Link>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className={`p-6 rounded-2xl border space-y-2 transition ${isDarkMode ? 'bg-slate-950/80 border-slate-800 hover:border-amber-500/30' : 'bg-slate-50 border-slate-200 hover:border-amber-500/40'}`}>
-                                            <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Rekening Bank Syariah Indonesia (BSI)</div>
-                                            <div className={`text-2xl font-black font-mono ${currentStyle.textAccent}`}>7700-1234-5678</div>
-                                            <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>a.n DKM {masjid.name}</div>
-                                        </div>
-
-                                        <div className={`p-6 rounded-2xl border space-y-2 transition ${isDarkMode ? 'bg-slate-950/80 border-slate-800 hover:border-emerald-500/30' : 'bg-slate-50 border-slate-200 hover:border-emerald-500/40'}`}>
-                                            <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Scan QRIS Direct Infaq</div>
-                                            <div className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                                Menerima donasi via GoPay, OVO, Dana, ShopeePay, &amp; Mobile Banking tanpa biaya transaksi.
-                                            </div>
-                                        </div>
-                                    </div>
+                        {/* SECTION 4: PROGRAM KEGIATAN MASJID & MUSHOLAH */}
+                        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+                                <div>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Aktivitas &amp; Pembinaan Umat</span>
+                                    <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Program Kegiatan Masjid</h3>
                                 </div>
-                            </section>
-                        )}
+                                <Link
+                                    to={`/m/${slug}/program`}
+                                    className={`px-5 py-2.5 rounded-xl font-bold text-xs shadow-md inline-flex items-center space-x-2 ${currentStyle.button}`}
+                                >
+                                    <span>Lihat Semua Program</span>
+                                    <ChevronRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {samplePrograms.map((prog) => (
+                                    <div 
+                                        key={prog.id} 
+                                        className={`p-6 rounded-3xl border space-y-3 transition-all duration-300 shadow-md flex flex-col justify-between ${isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-[#164134]' : 'bg-white border-slate-200/80 hover:border-[#164134] hover:shadow-xl'}`}
+                                    >
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between text-[10px] font-bold">
+                                                <span className={`px-2.5 py-0.5 rounded-full border uppercase ${currentStyle.badge}`}>
+                                                    {prog.category}
+                                                </span>
+                                                <span className="text-amber-600 dark:text-amber-400 font-mono">{prog.status}</span>
+                                            </div>
+
+                                            <h4 className={`font-black text-base leading-snug ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prog.title}</h4>
+                                            <p className={`text-xs leading-relaxed line-clamp-3 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{prog.description}</p>
+                                        </div>
+
+                                        <div className={`pt-3 border-t text-[11px] font-medium flex items-center space-x-1.5 ${isDarkMode ? 'border-slate-800 text-slate-400' : 'border-slate-100 text-slate-500'}`}>
+                                            <Clock className="w-3.5 h-3.5 shrink-0 text-[#164134]" />
+                                            <span>{prog.schedule}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
 
                         {/* SECTION 5: BERITA & KAJIAN SECTION */}
                         {showPosts && (
@@ -573,6 +621,43 @@ export default function PublicMosjidPage() {
                                 <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center font-bold">Parkir Motor & Mobil</div>
                                 <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center font-bold">Layanan Ambulans</div>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* PAGE 2.5: PROGRAM KEGIATAN MASJID & MUSHOLAH */}
+                {activeSubPage === 'program' && (
+                    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                        <div className="text-center space-y-2 max-w-2xl mx-auto">
+                            <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Pembinaan &amp; Aktivitas Umat</span>
+                            <h2 className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Program Kegiatan {masjid.name}</h2>
+                            <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Program rutin &amp; bertema sosial keagamaan yang diselenggarakan oleh DKM {masjid.name}.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                            {samplePrograms.map((prog) => (
+                                <div 
+                                    key={prog.id} 
+                                    className={`p-8 rounded-3xl border space-y-4 transition shadow-md ${isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-[#164134]' : 'bg-white border-slate-200/80 hover:border-[#164134] hover:shadow-xl'}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${currentStyle.badge}`}>
+                                            {prog.category}
+                                        </span>
+                                        <span className="text-xs font-bold font-mono px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-300">
+                                            {prog.status}
+                                        </span>
+                                    </div>
+
+                                    <h3 className={`text-xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prog.title}</h3>
+                                    <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>{prog.description}</p>
+
+                                    <div className={`pt-4 border-t text-xs font-semibold flex items-center space-x-2 ${isDarkMode ? 'border-slate-800 text-slate-400' : 'border-slate-100 text-slate-500'}`}>
+                                        <Clock className="w-4 h-4 text-[#164134] shrink-0" />
+                                        <span>Waktu / Jadwal: <strong>{prog.schedule}</strong></span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
