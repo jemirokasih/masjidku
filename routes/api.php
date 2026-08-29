@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Public\WebsiteController;
 use App\Http\Controllers\Api\Tenant\DonationController;
 use App\Http\Controllers\Api\Tenant\MasjidProfileController;
+use App\Http\Controllers\Api\Tenant\PageController;
 use App\Http\Controllers\Api\Tenant\PostController;
 use App\Http\Controllers\Api\Tenant\ThemeController as TenantThemeController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,9 @@ Route::prefix('v1/tenant')->middleware(['auth:sanctum', 'check_role:pengurus_mas
 
     // Donasi & Infaq
     Route::apiResource('/donations', DonationController::class);
+
+    // Custom Static Pages (CMS Halaman Profil, Sejarah, DKM, Laporan)
+    Route::apiResource('/pages', PageController::class);
 
     // Theme Marketplace & Selection
     Route::get('/themes', [TenantThemeController::class, 'index']);

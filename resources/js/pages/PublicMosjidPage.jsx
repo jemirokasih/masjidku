@@ -62,6 +62,15 @@ export default function PublicMosjidPage() {
 
     const { masjid, theme, recent_posts, donations, is_preview } = payload;
     const info = masjid?.info || {};
+    const hp = info?.homepage_settings || {};
+
+    const heroTitle = hp.hero_title || `Selamat Datang di Official Portal Resmi ${masjid.name}`;
+    const heroSubtitle = hp.hero_subtitle || (masjid.address ? `${masjid.address}, ${masjid.city || ''}` : 'Pusat kegiatan ibadah, dakwah, dan informasi jamaah.');
+    const ctaText = hp.hero_cta_text || 'Infaq / Donasi';
+    const ctaLink = hp.hero_cta_link || '#donasi';
+    const showSholat = hp.show_sholat !== false;
+    const showPosts = hp.show_posts !== false;
+    const showDonations = hp.show_donations !== false;
 
     const themeSlug = theme?.slug || masjid?.active_theme?.slug || 'default-clean';
 
@@ -132,18 +141,18 @@ export default function PublicMosjidPage() {
 
                     <nav className="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-300">
                         <a href="#tentang" className="hover:text-white transition">Profil</a>
-                        <a href="#kajian" className="hover:text-white transition">Berita & Kajian</a>
-                        <a href="#donasi" className="hover:text-white transition">Donasi QRIS</a>
+                        {showPosts && <a href="#kajian" className="hover:text-white transition">Berita & Kajian</a>}
+                        {showDonations && <a href="#donasi" className="hover:text-white transition">Donasi QRIS</a>}
                         <a href="#kontak" className="hover:text-white transition">Lokasi & Kontak</a>
                     </nav>
 
                     <div className="flex items-center space-x-3">
                         <a
-                            href="#donasi"
+                            href={ctaLink}
                             className={`px-4 py-2 rounded-xl font-bold text-xs shadow-md flex items-center space-x-1.5 transition ${currentStyle.button}`}
                         >
                             <HeartHandshake className="w-4 h-4" />
-                            <span>Infaq / Donasi</span>
+                            <span>{ctaText}</span>
                         </a>
                     </div>
                 </div>
@@ -160,111 +169,117 @@ export default function PublicMosjidPage() {
                     </div>
 
                     <h2 className="text-3xl sm:text-5xl font-black text-white max-w-3xl mx-auto leading-tight">
-                        {info.description || `Selamat Datang di Official Portal Resmi ${masjid.name}`}
+                        {heroTitle}
                     </h2>
 
                     <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                        {masjid.address ? `${masjid.address}, ${masjid.city || ''}` : 'Pusat kegiatan ibadah, dakwah, dan informasi jamaah.'}
+                        {heroSubtitle}
                     </p>
 
                     {/* Sholat Schedule Widget */}
-                    <div className="pt-8 max-w-3xl mx-auto">
-                        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                            <div className="text-xs font-bold text-slate-400 mb-3 flex items-center justify-center space-x-1">
-                                <Clock className={`w-3.5 h-3.5 ${currentStyle.textAccent}`} />
-                                <span>Jadwal Sholat Hari Ini</span>
-                            </div>
-                            <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Subuh</div>
-                                    <div className="font-mono font-bold text-white text-sm mt-0.5">04:42</div>
+                    {showSholat && (
+                        <div className="pt-8 max-w-3xl mx-auto">
+                            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                                <div className="text-xs font-bold text-slate-400 mb-3 flex items-center justify-center space-x-1">
+                                    <Clock className={`w-3.5 h-3.5 ${currentStyle.textAccent}`} />
+                                    <span>Jadwal Sholat Hari Ini</span>
                                 </div>
-                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Dzuhur</div>
-                                    <div className="font-mono font-bold text-white text-sm mt-0.5">12:01</div>
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Ashar</div>
-                                    <div className="font-mono font-bold text-white text-sm mt-0.5">15:20</div>
-                                </div>
-                                <div className={`p-2.5 rounded-xl bg-slate-950 border ${currentStyle.borderAccent}`}>
-                                    <div className={`text-[10px] font-bold uppercase ${currentStyle.textAccent}`}>Maghrib</div>
-                                    <div className="font-mono font-bold text-white text-sm mt-0.5">18:03</div>
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Isya</div>
-                                    <div className="font-mono font-bold text-white text-sm mt-0.5">19:13</div>
+                                <div className="grid grid-cols-5 gap-2 text-center text-xs">
+                                    <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase">Subuh</div>
+                                        <div className="font-mono font-bold text-white text-sm mt-0.5">04:42</div>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase">Dzuhur</div>
+                                        <div className="font-mono font-bold text-white text-sm mt-0.5">12:01</div>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase">Ashar</div>
+                                        <div className="font-mono font-bold text-white text-sm mt-0.5">15:20</div>
+                                    </div>
+                                    <div className={`p-2.5 rounded-xl bg-slate-950 border ${currentStyle.borderAccent}`}>
+                                        <div className={`text-[10px] font-bold uppercase ${currentStyle.textAccent}`}>Maghrib</div>
+                                        <div className="font-mono font-bold text-white text-sm mt-0.5">18:03</div>
+                                    </div>
+                                    <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase">Isya</div>
+                                        <div className="font-mono font-bold text-white text-sm mt-0.5">19:13</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </section>
 
             {/* Kajian & Berita Section */}
-            <section id="kajian" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-                <div className="text-center space-y-2">
-                    <h3 className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Informasi & Kegiatan</h3>
-                    <h4 className="text-2xl font-black text-white">Berita & Jadwal Kajian Terbaru</h4>
-                </div>
+            {showPosts && (
+                <section id="kajian" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                    <div className="text-center space-y-2">
+                        <h3 className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Informasi & Kegiatan</h3>
+                        <h4 className="text-2xl font-black text-white">Berita & Jadwal Kajian Terbaru</h4>
+                    </div>
 
-                {recent_posts && recent_posts.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {recent_posts.map((post) => (
-                            <div key={post.id} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${currentStyle.badge}`}>
-                                    {post.type || 'Berita'}
-                                </span>
-                                <h5 className="font-bold text-base text-white">{post.title}</h5>
-                                <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">{post.content}</p>
-                                {post.speaker && (
-                                    <div className={`text-xs font-semibold pt-1 ${currentStyle.textAccent}`}>
-                                        Pemateri: {post.speaker}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center text-xs text-slate-500">
-                        Belum ada artikel berita atau kajian yang dipublikasikan.
-                    </div>
-                )}
-            </section>
+                    {recent_posts && recent_posts.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {recent_posts.map((post) => (
+                                <div key={post.id} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${currentStyle.badge}`}>
+                                        {post.type || 'Berita'}
+                                    </span>
+                                    <h5 className="font-bold text-base text-white">{post.title}</h5>
+                                    <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">{post.content}</p>
+                                    {post.speaker && (
+                                        <div className={`text-xs font-semibold pt-1 ${currentStyle.textAccent}`}>
+                                            Pemateri: {post.speaker}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center text-xs text-slate-500">
+                            Belum ada artikel berita atau kajian yang dipublikasikan.
+                        </div>
+                    )}
+                </section>
+            )}
 
             {/* Donasi QRIS Section */}
-            <section id="donasi" className="py-16 bg-slate-900 border-y border-slate-800/80">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-                    <div className="text-center space-y-2">
-                        <h3 className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Layanan Donasi</h3>
-                        <h4 className="text-2xl font-black text-white">Infaq & Sedekah Digital QRIS Direct</h4>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        <div className="p-8 rounded-3xl bg-slate-950 border border-slate-800 space-y-4 text-center">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center mx-auto">
-                                <CreditCard className="w-6 h-6" />
-                            </div>
-                            <h5 className="font-bold text-base text-white">Rekening Bank Official</h5>
-                            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs space-y-1">
-                                <div className="text-slate-400">Bank Syariah Indonesia (BSI)</div>
-                                <div className={`text-lg font-bold ${currentStyle.textAccent}`}>7700-1234-5678</div>
-                                <div className="text-[11px] text-slate-500">a.n DKM {masjid.name}</div>
-                            </div>
+            {showDonations && (
+                <section id="donasi" className="py-16 bg-slate-900 border-y border-slate-800/80">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                        <div className="text-center space-y-2">
+                            <h3 className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Layanan Donasi</h3>
+                            <h4 className="text-2xl font-black text-white">Infaq & Sedekah Digital QRIS Direct</h4>
                         </div>
 
-                        <div className="p-8 rounded-3xl bg-slate-950 border border-slate-800 space-y-4 text-center">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center mx-auto">
-                                <Globe className="w-6 h-6" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                            <div className="p-8 rounded-3xl bg-slate-950 border border-slate-800 space-y-4 text-center">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center mx-auto">
+                                    <CreditCard className="w-6 h-6" />
+                                </div>
+                                <h5 className="font-bold text-base text-white">Rekening Bank Official</h5>
+                                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs space-y-1">
+                                    <div className="text-slate-400">Bank Syariah Indonesia (BSI)</div>
+                                    <div className={`text-lg font-bold ${currentStyle.textAccent}`}>7700-1234-5678</div>
+                                    <div className="text-[11px] text-slate-500">a.n DKM {masjid.name}</div>
+                                </div>
                             </div>
-                            <h5 className="font-bold text-base text-white">Scan QRIS Direct</h5>
-                            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400">
-                                Gunakan GoPay, OVO, Dana, ShopeePay, atau Mobile Banking pilihan Anda.
+
+                            <div className="p-8 rounded-3xl bg-slate-950 border border-slate-800 space-y-4 text-center">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center mx-auto">
+                                    <Globe className="w-6 h-6" />
+                                </div>
+                                <h5 className="font-bold text-base text-white">Scan QRIS Direct</h5>
+                                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400">
+                                    Gunakan GoPay, OVO, Dana, ShopeePay, atau Mobile Banking pilihan Anda.
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* Footer / Location */}
             <footer id="kontak" className="py-12 border-t border-slate-800 text-xs text-slate-400">

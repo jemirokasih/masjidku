@@ -110,6 +110,7 @@ class MasjidProfileController extends Controller
             'facilities' => 'nullable|array',
             'social_media' => 'nullable|array',
             'bank_accounts' => 'nullable|array',
+            'homepage_settings' => 'nullable|array',
             'qris_image' => 'nullable|file|image|max:2048',
         ]);
 
@@ -127,6 +128,7 @@ class MasjidProfileController extends Controller
             'facilities' => $validated['facilities'] ?? $info->facilities,
             'social_media' => $validated['social_media'] ?? $info->social_media,
             'bank_accounts' => $validated['bank_accounts'] ?? $info->bank_accounts,
+            'homepage_settings' => $validated['homepage_settings'] ?? $info->homepage_settings,
         ];
 
         if ($qrisPath) {

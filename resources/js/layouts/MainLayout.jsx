@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import NotificationDropdown from '../components/NotificationDropdown';
 import {
     LayoutDashboard,
+    Layout,
     Users,
     FileText,
     Receipt,
@@ -144,6 +145,7 @@ export default function MainLayout() {
             items: [
                 { name: 'Dashboard', path: '/', icon: LayoutDashboard },
                 { name: 'Profile Masjid', path: '/masjid-profile', icon: Building2 },
+                { name: 'Hero & Tampilan', path: '/cms-pages', icon: Layout },
                 { name: 'Kelola Konten', path: '/content', icon: FileText },
                 { name: 'Pengaturan', path: '/settings', icon: Settings },
             ]

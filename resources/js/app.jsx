@@ -17,6 +17,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminMosqueVerificationPage from './pages/Admin/AdminMosqueVerificationPage';
 import PublicMosjidPage from './pages/PublicMosjidPage';
 import MasjidProfilePage from './pages/MasjidProfilePage';
+import CMSPageManager from './pages/CMSPageManager';
 import ContentManagementPage from './pages/ContentManagementPage';
 import SettingsPage from './pages/SettingsPage';
 import ClientList from './pages/Clients/ClientList';
@@ -233,6 +234,7 @@ export default function App() {
                             <Route index element={<DashboardIndex />} />
                             <Route path="admin/verifikasi-masjid" element={<AdminMosqueVerificationPage />} />
                             <Route path="masjid-profile" element={<MasjidProfilePage />} />
+                            <Route path="cms-pages" element={<CMSPageManager />} />
                             <Route path="content" element={<ContentManagementPage />} />
                             <Route path="settings" element={<SettingsPage />} />
                             <Route path="clients" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientList /></ProtectedRoute>} />

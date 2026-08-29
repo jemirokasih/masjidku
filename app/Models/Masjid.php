@@ -61,6 +61,11 @@ class Masjid extends Model
         return $this->hasMany(Donation::class);
     }
 
+    public function pages(): HasMany
+    {
+        return $this->hasMany(Page::class);
+    }
+
     public function isApproved(): bool
     {
         return $this->verification_status === 'approved';

@@ -6,27 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MasjidInfo extends Model
+class Page extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'masjid_id',
-        'description',
-        'vision',
-        'mission',
-        'facilities',
-        'social_media',
-        'bank_accounts',
-        'qris_image',
-        'homepage_settings',
+        'title',
+        'slug',
+        'content',
+        'is_published',
     ];
 
     protected $casts = [
-        'facilities' => 'array',
-        'social_media' => 'array',
-        'bank_accounts' => 'array',
-        'homepage_settings' => 'array',
+        'is_published' => 'boolean',
     ];
 
     public function masjid(): BelongsTo
