@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
     HeartHandshake, BookOpenCheck, Globe, ShieldCheck, 
     ArrowRight, Sparkles, Building, Palette, RefreshCw, 
-    Plus, CheckCircle2, Clock, AlertTriangle
+    Plus, CheckCircle2, Clock, AlertTriangle, Tv
 } from 'lucide-react';
 import api from '../api/axios';
 
@@ -53,15 +53,26 @@ export default function Dashboard() {
                         <span>Mulai / Edit Setup</span>
                     </Link>
                     {masjid?.slug && (
-                        <a
-                            href={`/m/${masjid.slug}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center space-x-1.5 transition-all"
-                        >
-                            <Globe className="w-4 h-4 text-emerald-600" />
-                            <span>Lihat Website Publik</span>
-                        </a>
+                        <>
+                            <a
+                                href={`/m/${masjid.slug}/tv`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center space-x-1.5 transition-all"
+                            >
+                                <Tv className="w-4 h-4 text-amber-500" />
+                                <span>Display TV Masjid</span>
+                            </a>
+                            <a
+                                href={`/m/${masjid.slug}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center space-x-1.5 transition-all"
+                            >
+                                <Globe className="w-4 h-4 text-emerald-600" />
+                                <span>Website Publik</span>
+                            </a>
+                        </>
                     )}
                 </div>
             </div>

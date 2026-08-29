@@ -27,3 +27,4 @@ class Page extends Model
         return $this->belongsTo(Masjid::class);
     }
 }
+
