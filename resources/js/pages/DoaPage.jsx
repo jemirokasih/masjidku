@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Search, BookOpenCheck, ArrowLeft, Sparkles, CheckCircle2, LogIn } from 'lucide-react';
+import { Heart, Search, BookOpenCheck, ArrowLeft, Sparkles, CheckCircle2, LogIn, ChevronDown } from 'lucide-react';
 
 export default function DoaPage({ embedded = false }) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -166,8 +166,19 @@ export default function DoaPage({ embedded = false }) {
 
                     <nav className="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-300">
                         <Link to="/" className="hover:text-white transition">Beranda</Link>
-                        <Link to="/quran" className="hover:text-white transition">Al-Qur'an</Link>
-                        <Link to="/doa" className="text-emerald-400 border-b-2 border-emerald-400 py-5">Doa Harian</Link>
+
+                        {/* Dropdown Menu: Sumber Daya */}
+                        <div className="relative py-5 group">
+                            <button className="flex items-center space-x-1 text-emerald-400 border-b-2 border-emerald-400 font-bold">
+                                <span>Sumber Daya</span>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                            <div className="absolute top-full left-0 w-52 py-2 rounded-2xl bg-slate-900 border border-slate-800 text-slate-200 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <Link to="/quran" className="block px-4 py-2.5 text-xs font-bold hover:bg-slate-800 text-slate-300 hover:text-white">📖 Al-Qur'an Digital</Link>
+                                <Link to="/doa" className="block px-4 py-2.5 text-xs font-bold hover:bg-slate-800 text-emerald-400">🤲 Doa Harian &amp; Dzikir</Link>
+                            </div>
+                        </div>
+
                         <Link to="/tv" className="hover:text-white transition">Display TV</Link>
                     </nav>
 
