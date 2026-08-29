@@ -148,43 +148,19 @@ export default function PublicMosjidPage() {
 
     const themeSlug = theme?.slug || masjid?.active_theme?.slug || 'default-clean';
 
-    // Theme Color Styles
-    const themeStyles = {
-        'green-islamic': {
-            badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300',
-            button: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20',
-            textAccent: 'text-emerald-400',
-            borderAccent: 'border-emerald-500/40',
-            bgGlow: 'bg-emerald-500/10',
-            navActive: 'text-emerald-400 border-b-2 border-emerald-400',
-        },
-        'blue-andalusia': {
-            badge: 'bg-blue-500/10 border-blue-500/20 text-blue-300',
-            button: 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20',
-            textAccent: 'text-blue-400',
-            borderAccent: 'border-blue-500/40',
-            bgGlow: 'bg-blue-500/10',
-            navActive: 'text-blue-400 border-b-2 border-blue-400',
-        },
-        'gold-premium': {
-            badge: 'bg-amber-500/10 border-amber-500/20 text-amber-300',
-            button: 'bg-amber-600 hover:bg-amber-500 text-slate-950 font-extrabold shadow-amber-500/20',
-            textAccent: 'text-amber-400',
-            borderAccent: 'border-amber-500/40',
-            bgGlow: 'bg-amber-500/10',
-            navActive: 'text-amber-400 border-b-2 border-amber-400',
-        },
-        'default-clean': {
-            badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300',
-            button: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20',
-            textAccent: 'text-emerald-400',
-            borderAccent: 'border-emerald-500/40',
-            bgGlow: 'bg-emerald-500/10',
-            navActive: 'text-emerald-400 border-b-2 border-emerald-400',
-        }
+    // Dynamic Theme Color Styles with Base #164134 Emerald Gradient
+    const currentStyle = {
+        badge: isDarkMode 
+            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' 
+            : 'bg-[#164134]/10 border-[#164134]/20 text-[#164134] font-bold',
+        button: 'bg-gradient-to-r from-[#164134] via-[#1c5242] to-[#226350] hover:from-[#1c5242] hover:to-[#164134] text-white shadow-md shadow-[#164134]/20 border border-[#164134]/30',
+        textAccent: isDarkMode ? 'text-emerald-400' : 'text-[#164134]',
+        borderAccent: isDarkMode ? 'border-emerald-500/40' : 'border-[#164134]/50',
+        bgGlow: isDarkMode ? 'bg-[#164134]/30' : 'bg-[#164134]/15',
+        navActive: isDarkMode 
+            ? 'text-emerald-400 border-b-2 border-emerald-400 font-bold' 
+            : 'text-[#164134] border-b-2 border-[#164134] font-black',
     };
-
-    const currentStyle = themeStyles[themeSlug] || themeStyles['default-clean'];
 
     // Helper to calculate next upcoming prayer
     const getNextPrayerKey = (now, schedule) => {
@@ -214,7 +190,7 @@ export default function PublicMosjidPage() {
     const nextPrayerKey = getNextPrayerKey(currentTime, prayerSchedule);
 
     return (
-        <div className={`min-h-screen font-sans selection:bg-emerald-600 selection:text-white flex flex-col justify-between transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+        <div className={`min-h-screen font-sans selection:bg-[#164134] selection:text-white flex flex-col justify-between transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f6f8f7] text-slate-900'}`}>
             <div>
                 {/* Top Preview Status Bar (If pending verification) */}
                 {is_preview && (
@@ -233,7 +209,7 @@ export default function PublicMosjidPage() {
                 <header className={`sticky top-0 z-40 backdrop-blur-md border-b transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200 shadow-sm'}`}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                         <Link to={`/m/${slug}/beranda`} className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-500/20 font-black">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#164134] to-[#226350] flex items-center justify-center text-white text-xl shadow-md font-black">
                                 🕌
                             </div>
                             <div>
