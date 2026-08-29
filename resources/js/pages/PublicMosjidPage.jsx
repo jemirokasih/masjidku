@@ -305,32 +305,48 @@ export default function PublicMosjidPage() {
                 {/* PAGE 1: BERANDA (HOME PAGE) */}
                 {activeSubPage === 'beranda' && (
                     <div className="space-y-16 pb-16">
-                        {/* SECTION 1: HERO BANNER */}
-                        <section className="relative py-20 overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800/80">
-                            <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] ${currentStyle.bgGlow} rounded-full blur-3xl pointer-events-none`}></div>
+                        {/* SECTION 1: HERO BANNER (ISLAMIC ARTWORK & GEOMETRY PATTERN) */}
+                        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80">
+                            {/* Islamic Background Radial Glow & Geometry Pattern */}
+                            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] ${currentStyle.bgGlow} rounded-full blur-[120px] pointer-events-none`}></div>
+                            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
 
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-                                <div className={`inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full border text-xs font-bold ${currentStyle.badge}`}>
+                                {/* Calligraphy Bismillah Header */}
+                                <div className="text-emerald-400 font-serif text-2xl sm:text-4xl tracking-widest pt-2 pb-1 drop-shadow-lg select-none">
+                                    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                                </div>
+
+                                <div className={`inline-flex items-center space-x-2 px-4 py-1.5 rounded-full border text-xs font-bold ${currentStyle.badge} backdrop-blur-md`}>
                                     <Sparkles className="w-3.5 h-3.5" />
                                     <span>Official Website Resmi {masjid.name}</span>
                                 </div>
 
-                                <h2 className="text-3xl sm:text-5xl font-black text-white max-w-3xl mx-auto leading-tight">
+                                <h2 className="text-3xl sm:text-5xl font-black text-white max-w-3xl mx-auto leading-tight tracking-tight">
                                     {heroTitle}
                                 </h2>
 
-                                <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                                <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
                                     {heroSubtitle}
                                 </p>
+
+                                {/* Ayat Scroll Ticker */}
+                                <div className="pt-2">
+                                    <div className="inline-block px-5 py-2 rounded-2xl bg-slate-900/80 border border-amber-500/30 text-amber-300 text-xs font-serif italic shadow-inner">
+                                        "Hanyalah yang memakmurkan masjid Allah ialah orang yang beriman kepada Allah &amp; Hari Kemudian" — (QS. At-Taubah: 18)
+                                    </div>
+                                </div>
 
                                 {/* SECTION 2: JADWAL SHOLAT WIDGET */}
                                 {showSholat && (
                                     <div className="pt-6 max-w-3xl mx-auto">
-                                        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
-                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-b border-slate-800 pb-2.5">
-                                                <div className="flex items-center space-x-1.5 font-bold text-slate-300">
-                                                    <Clock className={`w-4 h-4 ${currentStyle.textAccent}`} />
-                                                    <span>Jadwal Sholat Hari Ini — <strong className="text-white uppercase">{prayerSchedule.lokasi}</strong></span>
+                                        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4 backdrop-blur-md relative overflow-hidden">
+                                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"></div>
+                                            
+                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-b border-slate-800/80 pb-3">
+                                                <div className="flex items-center space-x-2 font-bold text-slate-300">
+                                                    <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-serif text-sm">🕌</div>
+                                                    <span>Jadwal Sholat Realtime — <strong className="text-white uppercase tracking-wider">{prayerSchedule.lokasi}</strong></span>
                                                 </div>
                                                 <div className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-950 border border-slate-800 text-emerald-400 shadow">
                                                     ⏰ Jam Saat Ini: <span className="text-white font-mono font-black">{currentTime.toLocaleTimeString('id-ID')} WIB</span>
@@ -379,12 +395,13 @@ export default function PublicMosjidPage() {
                             </div>
                         </section>
 
-                        {/* SECTION 3: PROFIL SECTION */}
+                        {/* SECTION 3: PROFIL SECTION (MIHRAB ARCH STYLING) */}
                         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 hover:border-amber-500/30 transition shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                                <div className="absolute top-0 left-0 w-32 h-1 bg-gradient-to-r from-emerald-500 to-amber-500"></div>
                                 <div className="space-y-4 max-w-2xl">
                                     <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold ${currentStyle.badge}`}>
-                                        <span>🕌 Profil Masjid</span>
+                                        <span>🕌 Profil &amp; Sejarah</span>
                                     </div>
                                     <h3 className="text-2xl sm:text-3xl font-black text-white">
                                         Mengenal {masjid.name}
@@ -406,10 +423,11 @@ export default function PublicMosjidPage() {
                         {/* SECTION 4: PROGRAM & DONASI SECTION */}
                         {showDonations && (
                             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 space-y-6">
+                                <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-950 border border-emerald-500/30 space-y-6 shadow-xl relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-48 h-1 bg-gradient-to-l from-amber-500 to-transparent"></div>
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                                         <div>
-                                            <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Infaq &amp; Shadaqah</span>
+                                            <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Infaq &amp; Shadaqah Jariyah</span>
                                             <h3 className="text-2xl font-black text-white">Program Donasi Masjid</h3>
                                         </div>
                                         <Link
@@ -422,13 +440,13 @@ export default function PublicMosjidPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 hover:border-amber-500/30 transition">
                                             <div className="text-xs font-bold text-slate-400">Rekening Bank Syariah Indonesia (BSI)</div>
                                             <div className={`text-2xl font-black font-mono ${currentStyle.textAccent}`}>7700-1234-5678</div>
                                             <div className="text-xs text-slate-400">a.n DKM {masjid.name}</div>
                                         </div>
 
-                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 hover:border-emerald-500/30 transition">
                                             <div className="text-xs font-bold text-slate-400">Scan QRIS Direct Infaq</div>
                                             <div className="text-xs text-slate-300 leading-relaxed">
                                                 Menerima donasi via GoPay, OVO, Dana, ShopeePay, &amp; Mobile Banking tanpa biaya transaksi.
@@ -442,9 +460,9 @@ export default function PublicMosjidPage() {
                         {/* SECTION 5: BERITA & KAJIAN SECTION */}
                         {showPosts && (
                             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
                                     <div>
-                                        <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Dakwah &amp; Agenda</span>
+                                        <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Dakwah &amp; Agenda Keilmuan</span>
                                         <h3 className="text-2xl font-black text-white">Berita &amp; Kajian Terbaru</h3>
                                     </div>
                                     <Link
@@ -459,8 +477,8 @@ export default function PublicMosjidPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {recent_posts && recent_posts.length > 0 ? (
                                         recent_posts.map((post) => (
-                                            <div key={post.id} className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
-                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">
+                                            <div key={post.id} className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3 hover:border-amber-500/30 transition shadow-lg">
+                                                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">
                                                     {post.category || 'Kajian'}
                                                 </span>
                                                 <h4 className="font-bold text-base text-white leading-snug">{post.title}</h4>
@@ -478,9 +496,9 @@ export default function PublicMosjidPage() {
 
                         {/* SECTION 6: LOKASI & KONTAK SECTION */}
                         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 text-center">
+                            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 text-center shadow-xl relative overflow-hidden">
                                 <div className="space-y-2 max-w-xl mx-auto">
-                                    <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Lokasi &amp; Kontak</span>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Lokasi &amp; Kontak DKM</span>
                                     <h3 className="text-2xl font-black text-white">Kunjungi &amp; Hubungi Kami</h3>
                                     <p className="text-xs text-slate-400">
                                         {masjid.address ? `${masjid.address}, ${masjid.city || ''}, ${masjid.province || ''}` : 'Alamat masjid belum diatur.'}
