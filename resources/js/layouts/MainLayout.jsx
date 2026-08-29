@@ -126,9 +126,21 @@ export default function MainLayout() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const navGroups = [
+    const isPlatformAdmin = ['platform_admin', 'admin', 'administrator', 'superadmin'].includes(userRole);
+
+    const navGroups = isPlatformAdmin ? [
         {
-            groupName: 'UTAMA',
+            groupName: 'ADMIN MASJIDKU',
+            items: [
+                { name: 'Dashboard Admin', path: '/', icon: LayoutDashboard },
+                { name: 'Verifikasi Masjid', path: '/admin/verifikasi-masjid', icon: ShieldCheck },
+                { name: 'Marketplace Tema', path: '/settings', icon: Settings },
+                { name: 'Manajemen User', path: '/users', icon: Users },
+            ]
+        }
+    ] : [
+        {
+            groupName: 'CMS PENGURUS',
             items: [
                 { name: 'Dashboard', path: '/', icon: LayoutDashboard },
                 { name: 'Profile Masjid', path: '/masjid-profile', icon: Building2 },
@@ -153,25 +165,25 @@ export default function MainLayout() {
     return (
         <div className="min-h-screen bg-slate-100 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 flex flex-col md:flex-row font-sans transition-colors duration-200">
             {/* Mobile Topbar */}
-            <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#0f172a] text-slate-100 border-b border-slate-800 sticky top-0 z-50">
+            <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#064e3b] text-slate-100 border-b border-emerald-800 sticky top-0 z-50">
                 <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-md shadow-blue-500/20 text-sm">
-                        M
+                    <div className="w-8 h-8 rounded-lg bg-emerald-700 flex items-center justify-center font-bold text-white shadow-md text-sm">
+                        🕌
                     </div>
-                    <span className="font-bold text-sm text-white tracking-tight">Mikrotek Neo</span>
+                    <span className="font-bold text-sm text-white tracking-tight">Masjidku</span>
                 </div>
                 <div className="flex items-center space-x-2">
                     <NotificationDropdown />
                     <button
                         onClick={logout}
                         title="Logout"
-                        className="p-1.5 rounded-lg bg-slate-800 text-rose-400 hover:bg-rose-500/10"
+                        className="p-1.5 rounded-lg bg-emerald-900/60 text-rose-300 hover:bg-rose-500/10"
                     >
                         <LogOut className="w-4 h-4" />
                     </button>
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+                        className="p-1.5 rounded-lg bg-emerald-900/60 text-slate-200 hover:text-white"
                     >
                         {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                     </button>
@@ -179,22 +191,22 @@ export default function MainLayout() {
             </div>
 
             {/* Sidebar Desktop */}
-            <aside className={`fixed inset-y-0 left-0 z-40 bg-[#0f172a] text-slate-300 border-r border-slate-800 flex flex-col justify-between transition-all duration-300 ease-in-out md:static md:translate-x-0 ${
+            <aside className={`fixed inset-y-0 left-0 z-40 bg-[#064e3b] text-slate-200 border-r border-emerald-900 flex flex-col justify-between transition-all duration-300 ease-in-out md:static md:translate-x-0 ${
                 sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0'
             } ${sidebarCollapsed ? 'md:w-20' : 'md:w-64'}`}>
                 <div className={`space-y-5 overflow-y-auto overflow-x-hidden ${sidebarCollapsed ? 'p-2.5' : 'p-4'}`}>
                     {/* Logo & Brand Header with Single Minimize Button */}
                     <div className={`flex items-center pt-1 ${sidebarCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
                         <div className="flex items-center space-x-3 overflow-hidden">
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 p-0.5 shadow-lg shadow-blue-600/30 shrink-0">
-                                <div className="w-full h-full bg-[#0f172a] rounded-[10px] flex items-center justify-center font-black text-blue-400 text-base">
-                                    M
-                                </div>
+                            <div className="w-9 h-9 rounded-xl bg-emerald-800 p-0.5 shadow-lg shrink-0 flex items-center justify-center text-xl text-white">
+                                🕌
                             </div>
                             {!sidebarCollapsed && (
                                 <div className="truncate">
-                                    <h2 className="font-bold text-sm text-slate-100 tracking-tight leading-none">MIKROTEK</h2>
-                                    <span className="text-[10px] font-semibold text-blue-400 tracking-wider uppercase">Business Suite Neo</span>
+                                    <h2 className="font-extrabold text-sm text-white tracking-tight leading-none">MASJIDKU</h2>
+                                    <span className="text-[9px] font-bold text-emerald-200 tracking-widest uppercase">
+                                        {isPlatformAdmin ? 'ADMIN MASJIDKU' : 'PANEL PENGURUS'}
+                                    </span>
                                 </div>
                             )}
                         </div>

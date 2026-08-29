@@ -13,6 +13,8 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminMosqueVerificationPage from './pages/Admin/AdminMosqueVerificationPage';
 import PublicMosjidPage from './pages/PublicMosjidPage';
 import MasjidProfilePage from './pages/MasjidProfilePage';
 import ContentManagementPage from './pages/ContentManagementPage';
@@ -163,6 +165,18 @@ const PublicRoute = ({ children }) => {
     return children;
 };
 
+// Dashboard Router based on user role (Platform Admin vs Pengurus Masjid)
+const DashboardIndex = () => {
+    const { user } = useAuth();
+    const role = (user?.role || '').toLowerCase();
+    const isPlatformAdmin = ['platform_admin', 'admin', 'administrator', 'superadmin'].includes(role);
+
+    if (isPlatformAdmin) {
+        return <AdminDashboard />;
+    }
+    return <Dashboard />;
+};
+
 // Root Route Handler (shows LandingPage for guests, MainLayout for authenticated users)
 const RootRoute = () => {
     const { isAuthenticated, loading } = useAuth();
@@ -216,7 +230,8 @@ export default function App() {
 
                         {/* App Routes */}
                         <Route path="/" element={<RootRoute />}>
-                            <Route index element={<Dashboard />} />
+                            <Route index element={<DashboardIndex />} />
+                            <Route path="admin/verifikasi-masjid" element={<AdminMosqueVerificationPage />} />
                             <Route path="masjid-profile" element={<MasjidProfilePage />} />
                             <Route path="content" element={<ContentManagementPage />} />
                             <Route path="settings" element={<SettingsPage />} />
