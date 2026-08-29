@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { 
     BookOpen, Search, Play, Pause, Volume2, 
-    ArrowLeft, RefreshCw, FileText, CheckCircle2, ChevronRight
+    ArrowLeft, RefreshCw, FileText, CheckCircle2, ChevronRight,
+    Globe, HeartHandshake, LogIn
 } from 'lucide-react';
 
 export default function QuranPage({ embedded = false }) {
@@ -68,12 +69,8 @@ export default function QuranPage({ embedded = false }) {
         s.nomor.toString() === searchQuery
     );
 
-    const containerClass = embedded 
-        ? "py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6" 
-        : "min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8 space-y-6 max-w-6xl mx-auto";
-
-    return (
-        <div className={containerClass}>
+    const mainContent = (
+        <div className={embedded ? "py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6"}>
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
                 <div className="flex items-center space-x-3">
@@ -217,6 +214,62 @@ export default function QuranPage({ embedded = false }) {
                     )}
                 </div>
             )}
+        </div>
+    );
+
+    if (embedded) {
+        return mainContent;
+    }
+
+    return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col justify-between">
+            {/* Standalone Public Header Navbar */}
+            <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <Link to="/" className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-500/20 font-black">
+                            🕌
+                        </div>
+                        <div>
+                            <h1 className="font-black text-base text-white leading-none tracking-tight">Masjidku</h1>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                                Portal Al-Qur'an Digital
+                            </span>
+                        </div>
+                    </Link>
+
+                    <nav className="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-300">
+                        <Link to="/" className="hover:text-white transition">Beranda</Link>
+                        <Link to="/quran" className="text-emerald-400 border-b-2 border-emerald-400 py-5">Al-Qur'an</Link>
+                        <Link to="/doa" className="hover:text-white transition">Doa Harian</Link>
+                    </nav>
+
+                    <div className="flex items-center space-x-3">
+                        <Link
+                            to="/login"
+                            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md flex items-center space-x-1.5 transition"
+                        >
+                            <LogIn className="w-4 h-4" />
+                            <span>Login Pengurus</span>
+                        </Link>
+                    </div>
+                </div>
+            </header>
+
+            {mainContent}
+
+            {/* Standalone Public Footer */}
+            <footer className="py-8 border-t border-slate-800 text-xs text-slate-400">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center space-x-2">
+                        <span className="font-bold text-white">Masjidku.id</span>
+                        <span>&copy; 2026. Powered by EQuran.id SDK API.</span>
+                    </div>
+                    <div className="flex space-x-6">
+                        <Link to="/register" className="hover:text-emerald-400">Buat Website Masjid Baru</Link>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }
