@@ -225,7 +225,7 @@ export default function App() {
 
                         {/* Public Setup Wizard & Client Portal Routes */}
                         <Route path="/setup" element={<SetupWizardPage />} />
-                        <Route path="/m/:slug" element={<PublicMosjidPage />} />
+                        <Route path="/m/:slug/*" element={<PublicMosjidPage />} />
                         <Route path="/portal/invoice/:token" element={<InvoicePortal />} />
                         <Route path="/portal/invoice/:number" element={<InvoicePortal />} />
 
