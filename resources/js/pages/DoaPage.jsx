@@ -168,9 +168,16 @@ export default function DoaPage({ embedded = false }) {
                         <Link to="/" className="hover:text-white transition">Beranda</Link>
                         <Link to="/quran" className="hover:text-white transition">Al-Qur'an</Link>
                         <Link to="/doa" className="text-emerald-400 border-b-2 border-emerald-400 py-5">Doa Harian</Link>
+                        <Link to="/tv" className="hover:text-white transition">Display TV</Link>
                     </nav>
 
                     <div className="flex items-center space-x-3">
+                        <Link
+                            to="/register"
+                            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition"
+                        >
+                            Daftar Website
+                        </Link>
                         <Link
                             to="/login"
                             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md flex items-center space-x-1.5 transition"
