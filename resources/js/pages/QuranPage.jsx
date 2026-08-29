@@ -118,6 +118,29 @@ export default function QuranPage({ embedded = false }) {
                         </div>
                     ) : (
                         <div className="space-y-6">
+                            {/* Prev & Next Surah Quick Bar (Top) */}
+                            <div className="flex items-center justify-between gap-3">
+                                {selectedSurahNo > 1 ? (
+                                    <button
+                                        onClick={() => handleSelectSurah(selectedSurahNo - 1)}
+                                        className={`px-4 py-2.5 rounded-2xl border text-xs font-bold flex items-center space-x-2 transition ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100 shadow-sm'}`}
+                                    >
+                                        <ArrowLeft className="w-4 h-4 text-[#164134]" />
+                                        <span>Surah Sebelum: <strong>{surahDetail.suratSebelumnya ? surahDetail.suratSebelumnya.namaLatin : `Surah ${selectedSurahNo - 1}`}</strong></span>
+                                    </button>
+                                ) : <div />}
+
+                                {selectedSurahNo < 114 ? (
+                                    <button
+                                        onClick={() => handleSelectSurah(selectedSurahNo + 1)}
+                                        className={`px-4 py-2.5 rounded-2xl border text-xs font-bold flex items-center space-x-2 transition ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100 shadow-sm'}`}
+                                    >
+                                        <span>Surah Selanjutnya: <strong>{surahDetail.suratSelanjutnya ? surahDetail.suratSelanjutnya.namaLatin : `Surah ${selectedSurahNo + 1}`}</strong></span>
+                                        <ChevronRight className="w-4 h-4 text-[#164134]" />
+                                    </button>
+                                ) : <div />}
+                            </div>
+
                             {/* Surah Header Card */}
                             <div className="p-8 rounded-3xl bg-gradient-to-r from-[#164134] via-[#1c5242] to-[#226350] text-white shadow-xl text-center space-y-3 relative overflow-hidden">
                                 <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-white/20 border border-white/30 text-emerald-100 uppercase tracking-widest">
@@ -173,6 +196,29 @@ export default function QuranPage({ embedded = false }) {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+
+                            {/* Prev & Next Surah Quick Bar (Bottom) */}
+                            <div className="flex items-center justify-between gap-3 pt-6 border-t border-slate-200/80 dark:border-slate-800">
+                                {selectedSurahNo > 1 ? (
+                                    <button
+                                        onClick={() => handleSelectSurah(selectedSurahNo - 1)}
+                                        className={`px-5 py-3 rounded-2xl border text-xs font-bold flex items-center space-x-2 transition ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100 shadow-md'}`}
+                                    >
+                                        <ArrowLeft className="w-4 h-4 text-[#164134]" />
+                                        <span>← Surah Sebelum: <strong>{surahDetail.suratSebelumnya ? surahDetail.suratSebelumnya.namaLatin : `Surah ${selectedSurahNo - 1}`}</strong></span>
+                                    </button>
+                                ) : <div />}
+
+                                {selectedSurahNo < 114 ? (
+                                    <button
+                                        onClick={() => handleSelectSurah(selectedSurahNo + 1)}
+                                        className={`px-5 py-3 rounded-2xl border text-xs font-bold flex items-center space-x-2 transition ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100 shadow-md'}`}
+                                    >
+                                        <span>Surah Selanjutnya: <strong>{surahDetail.suratSelanjutnya ? surahDetail.suratSelanjutnya.namaLatin : `Surah ${selectedSurahNo + 1}`}</strong> →</span>
+                                        <ChevronRight className="w-4 h-4 text-[#164134]" />
+                                    </button>
+                                ) : <div />}
                             </div>
                         </div>
                     )}
