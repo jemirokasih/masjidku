@@ -16,6 +16,25 @@ export default function PublicMosjidPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Realtime Clock & Prayer Schedule State
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [prayerSchedule, setPrayerSchedule] = useState({
+        subuh: '04:39',
+        dzuhur: '11:57',
+        ashar: '15:15',
+        maghrib: '17:56',
+        isya: '19:05',
+        lokasi: 'KOTA JAKARTA'
+    });
+
+    // Live Clock Ticker
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     // Determine current sub-page based on pathname
     // pathname: /m/alikhlas/beranda or /m/alikhlas/profile or /m/alikhlas/berita etc.
     const rawPath = location.pathname.replace(new RegExp(`^/m/${slug}`), '').replace(/^\//, '').toLowerCase();
@@ -42,6 +61,49 @@ export default function PublicMosjidPage() {
             fetchWebsiteData();
         }
     }, [slug]);
+
+    // Fetch Real Prayer Times API (MyQuran API v2)
+    useEffect(() => {
+        const fetchPrayerApi = async () => {
+            try {
+                const now = new Date();
+                const y = now.getFullYear();
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(now.getDate()).padStart(2, '0');
+
+                let cityId = '1301'; // Default Kota Jakarta
+                if (payload?.masjid?.city) {
+                    try {
+                        const searchRes = await axios.get(`https://api.myquran.com/v2/sholat/kota/cari/${payload.masjid.city}`);
+                        if (searchRes.data?.data?.[0]?.id) {
+                            cityId = searchRes.data.data[0].id;
+                        }
+                    } catch (e) {
+                        console.log('City search fallback to 1301');
+                    }
+                }
+
+                const res = await axios.get(`https://api.myquran.com/v2/sholat/jadwal/${cityId}/${y}/${m}/${d}`);
+                const j = res.data?.data?.jadwal;
+                if (j) {
+                    setPrayerSchedule({
+                        subuh: j.subuh || '04:39',
+                        dzuhur: j.dzuhur || '11:57',
+                        ashar: j.ashar || '15:15',
+                        maghrib: j.maghrib || '17:56',
+                        isya: j.isya || '19:05',
+                        lokasi: res.data.data.lokasi || 'KOTA JAKARTA'
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to fetch MyQuran prayer times API', err);
+            }
+        };
+
+        if (payload) {
+            fetchPrayerApi();
+        }
+    }, [payload]);
 
     if (loading) {
         return (
@@ -236,31 +298,37 @@ export default function PublicMosjidPage() {
                                 {/* Sholat Schedule Widget */}
                                 {showSholat && (
                                     <div className="pt-8 max-w-3xl mx-auto">
-                                        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                                            <div className="text-xs font-bold text-slate-400 mb-3 flex items-center justify-center space-x-1">
-                                                <Clock className={`w-3.5 h-3.5 ${currentStyle.textAccent}`} />
-                                                <span>Jadwal Sholat Hari Ini</span>
+                                        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-b border-slate-800 pb-2.5">
+                                                <div className="flex items-center space-x-1.5 font-bold text-slate-300">
+                                                    <Clock className={`w-4 h-4 ${currentStyle.textAccent}`} />
+                                                    <span>Jadwal Sholat Hari Ini — <strong className="text-white uppercase">{prayerSchedule.lokasi}</strong></span>
+                                                </div>
+                                                <div className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-950 border border-slate-800 text-emerald-400 shadow">
+                                                    ⏰ Jam Saat Ini: <span className="text-white font-mono font-black">{currentTime.toLocaleTimeString('id-ID')} WIB</span>
+                                                </div>
                                             </div>
+
                                             <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
                                                     <div className="text-[10px] text-slate-500 font-bold uppercase">Subuh</div>
-                                                    <div className="font-mono font-bold text-white text-sm mt-0.5">04:42</div>
+                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.subuh}</div>
                                                 </div>
-                                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
                                                     <div className="text-[10px] text-slate-500 font-bold uppercase">Dzuhur</div>
-                                                    <div className="font-mono font-bold text-white text-sm mt-0.5">12:01</div>
+                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.dzuhur}</div>
                                                 </div>
-                                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
                                                     <div className="text-[10px] text-slate-500 font-bold uppercase">Ashar</div>
-                                                    <div className="font-mono font-bold text-white text-sm mt-0.5">15:20</div>
+                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.ashar}</div>
                                                 </div>
-                                                <div className={`p-2.5 rounded-xl bg-slate-950 border ${currentStyle.borderAccent}`}>
+                                                <div className={`p-3 rounded-xl bg-slate-950 border ${currentStyle.borderAccent} shadow-lg shadow-emerald-500/10`}>
                                                     <div className={`text-[10px] font-bold uppercase ${currentStyle.textAccent}`}>Maghrib</div>
-                                                    <div className="font-mono font-bold text-white text-sm mt-0.5">18:03</div>
+                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.maghrib}</div>
                                                 </div>
-                                                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
                                                     <div className="text-[10px] text-slate-500 font-bold uppercase">Isya</div>
-                                                    <div className="font-mono font-bold text-white text-sm mt-0.5">19:13</div>
+                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.isya}</div>
                                                 </div>
                                             </div>
                                         </div>
