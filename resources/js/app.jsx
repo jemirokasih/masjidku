@@ -245,6 +245,7 @@ export default function App() {
                             <Route path="masjid-profile" element={<MasjidProfilePage />} />
                             <Route path="cms-pages" element={<CMSPageManager />} />
                             <Route path="content" element={<ContentManagementPage />} />
+                            <Route path="content/:tab" element={<ContentManagementPage />} />
                             <Route path="settings" element={<SettingsPage />} />
                             <Route path="clients" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientList /></ProtectedRoute>} />
                             <Route path="clients/create" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientFormPage /></ProtectedRoute>} />

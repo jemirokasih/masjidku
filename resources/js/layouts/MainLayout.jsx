@@ -169,13 +169,13 @@ export default function MainLayout() {
                     name: 'Kelola Konten',
                     icon: FileText,
                     children: [
-                        { name: 'Beranda', path: '/content?tab=beranda', icon: Sparkles },
-                        { name: 'Profile Masjid', path: '/content?tab=profil', icon: Building },
-                        { name: 'Program DKM', path: '/content?tab=program', icon: HeartHandshake },
-                        { name: 'Berita & Kajian', path: '/content?tab=berita', icon: BookOpenCheck },
-                        { name: 'Jadwal Sholat', path: '/content?tab=sholat', icon: Clock },
-                        { name: 'Galeri Media', path: '/content?tab=galeri', icon: Image },
-                        { name: 'Kontak & Footer', path: '/content?tab=footer', icon: Share2 },
+                        { name: 'Beranda', path: '/content/beranda', icon: Sparkles },
+                        { name: 'Profile Masjid', path: '/content/profil', icon: Building },
+                        { name: 'Program DKM', path: '/content/program', icon: HeartHandshake },
+                        { name: 'Berita & Kajian', path: '/content/berita', icon: BookOpenCheck },
+                        { name: 'Jadwal Sholat', path: '/content/sholat', icon: Clock },
+                        { name: 'Galeri Media', path: '/content/galeri', icon: Image },
+                        { name: 'Kontak & Footer', path: '/content/footer', icon: Share2 },
                     ]
                 }
             ]
@@ -191,13 +191,8 @@ export default function MainLayout() {
     const isActive = (path) => {
         if (!path) return false;
         if (path === '/') return location.pathname === '/' && location.search === '';
-        const [basePath, searchStr] = path.split('?');
-        if (location.pathname !== basePath) return false;
-        if (!searchStr) {
-            return location.search === '';
-        }
-        if (location.search === '' && searchStr === 'tab=beranda') return true;
-        return location.search.includes(searchStr);
+        if (location.pathname === '/content' && path === '/content/beranda') return true;
+        return location.pathname === path;
     };
 
     const isWebmail = location.pathname === '/webmail';

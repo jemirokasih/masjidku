@@ -6,6 +6,9 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
+- **Refactoring Rute RESTful Kelola Konten (`/content/:tab`)**:
+  - Mengubah struktur rute URL kelola konten dari query string `content?tab=beranda` menjadi rute URL RESTful berikatan bersih: `/content/beranda`, `/content/profil`, `/content/program`, `/content/berita`, `/content/sholat`, `/content/galeri`, `/content/footer`.
+  - Menggunakan `useParams()` dari `react-router-dom` di `ContentManagementPage.jsx` untuk pengenalan tab instan.
 - **Penyederhanaan Layout CMS (Menghapus Inner Vertical Tab)**:
   - Menghapus kolom tab vertikal di dalam `ContentManagementPage.jsx` karena seluruh navigasi halaman sudah terintegrasi secara langsung melalui dropdown menu sidebar **📝 Kelola Konten**.
   - Mengubah tampilan form editor CMS menjadi 100% *full-width* (`max-w-5xl`) yang bersih, lega, dan fokus.
