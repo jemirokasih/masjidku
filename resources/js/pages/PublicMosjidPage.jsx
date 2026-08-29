@@ -717,9 +717,9 @@ export default function PublicMosjidPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                            {samplePrograms.map((prog) => (
+                            {(info.homepage_settings?.programs || samplePrograms).map((prog, idx) => (
                                 <div 
-                                    key={prog.id} 
+                                    key={prog.id || idx} 
                                     className={`p-8 rounded-3xl border space-y-4 transition shadow-md ${isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-[#164134]' : 'bg-white border-slate-200/80 hover:border-[#164134] hover:shadow-xl'}`}
                                 >
                                     <div className="flex items-center justify-between">

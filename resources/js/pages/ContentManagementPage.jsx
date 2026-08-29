@@ -59,7 +59,37 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
             { role: 'Imam Utama & Marbot', name: 'Ustadz Al-Hafiz', title: 'Bimbingan Ibadah & Marbot' }
         ],
 
-        // 4. Program & Donasi
+        // 4. Program DKM (Dynamic CRUD)
+        programs: [
+            {
+                title: 'Taman Pendidikan Al-Qur\'an (TPQ)',
+                category: 'Pendidikan Anak',
+                schedule: 'Senin - Jumat, 15.30 - 17.00 WIB',
+                description: 'Bimbingan membaca Al-Qur\'an metode Iqra & Tahfidz juz 30 untuk santri anak & remaja.',
+                status: 'Aktif'
+            },
+            {
+                title: 'Pesantren Kilat & Gema Ramadhan',
+                category: 'Program Musiman',
+                schedule: 'Bulan Ramadhan (Setiap Tahun)',
+                description: 'Kegiatan iktikaf, kajian tematik ramadhan, perlombaan adzan, serta santunan yatim dhuafa.',
+                status: 'Aktif'
+            },
+            {
+                title: 'Jumat Berkah Infaq Makan Siang',
+                category: 'Sosial & Layanan',
+                schedule: 'Setiap Hari Jumat Ba\'da Sholat Jumat',
+                description: 'Penyediaan 200+ porsi makanan gratis bagi jamaah sholat Jumat hasil donasi dermawan.',
+                status: 'Aktif'
+            },
+            {
+                title: 'Kajian Rutin Sabtu Subuh',
+                category: 'Kajian & Bimbingan',
+                schedule: 'Sabtu Pertama & Ketiga, 05.00 WIB',
+                description: 'Kajian kitab Riyadhus Shalihin & Fiqih Muamalah bersama para asatidz nasional.',
+                status: 'Aktif'
+            }
+        ],
         bank_name: 'Bank Syariah Indonesia (BSI)',
         bank_account: '7700-1234-5678',
         bank_holder: 'a.n DKM Masjid',
@@ -117,6 +147,7 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
                     facilities: info.facilities && info.facilities.length > 0 ? info.facilities : prev.facilities,
                     stats: hp.stats && hp.stats.length > 0 ? hp.stats : prev.stats,
                     dkm_members: hp.dkm_members && hp.dkm_members.length > 0 ? hp.dkm_members : prev.dkm_members,
+                    programs: hp.programs && hp.programs.length > 0 ? hp.programs : prev.programs,
                     hero_title: hp.hero_title || `Selamat Datang di Official Portal Resmi ${masjidRes.data.data.name}`,
                     hero_subtitle: hp.hero_subtitle || masjidRes.data.data.address || '',
                     hero_cta_text: hp.hero_cta_text || prev.hero_cta_text,
@@ -189,6 +220,7 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
                     nav_show_kontak: cmsSettings.nav_show_kontak,
                     stats: cmsSettings.stats,
                     dkm_members: cmsSettings.dkm_members,
+                    programs: cmsSettings.programs,
                 }
             });
             setMessage('Pengaturan konten berhasil disimpan!');
@@ -607,41 +639,165 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
                     </div>
                 )}
 
-                {/* 4. PROGRAM & DONASI */}
+                {/* 4. PROGRAM DKM & INFAQ */}
                 {activeTab === 'program' && (
-                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm">
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <HeartHandshake className="w-4 h-4 text-emerald-600" />
-                            <span>Program DKM & Rekening Infaq QRIS</span>
-                        </h2>
+                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
+                        {/* Section 1: Dynamic Programs DKM CRUD */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
+                                <div>
+                                    <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        <HeartHandshake className="w-4 h-4 text-emerald-600" />
+                                        <span>Manajemen Program Kegiatan DKM (TPQ, Pesantren Kilat, dll)</span>
+                                    </h2>
+                                    <p className="text-xs text-slate-500 mt-0.5">Tambah, edit, dan atur program pembinaan &amp; kegiatan rutin DKM masjid Anda.</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const updated = [...(cmsSettings.programs || [])];
+                                        updated.push({
+                                            title: 'Program Baru DKM',
+                                            category: 'Pendidikan / Sosial',
+                                            schedule: 'Jadwal / Waktu Rutin',
+                                            description: 'Deskripsi penjelasan kegiatan program DKM...',
+                                            status: 'Aktif'
+                                        });
+                                        setCmsSettings({ ...cmsSettings, programs: updated });
+                                    }}
+                                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-sm transition shrink-0"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    <span>Tambah Program DKM</span>
+                                </button>
+                            </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                            <div>
-                                <label className="block font-bold mb-1">Nama Bank Official</label>
-                                <input
-                                    type="text"
-                                    value={cmsSettings.bank_name}
-                                    onChange={(e) => setCmsSettings({ ...cmsSettings, bank_name: e.target.value })}
-                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {(cmsSettings.programs || []).map((prog, idx) => (
+                                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border space-y-3 relative group">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Judul Program (e.g. TPQ Al-Qur'an)"
+                                                value={prog.title}
+                                                onChange={(e) => {
+                                                    const updated = [...cmsSettings.programs];
+                                                    updated[idx].title = e.target.value;
+                                                    setCmsSettings({ ...cmsSettings, programs: updated });
+                                                }}
+                                                className="w-full p-2.5 bg-white dark:bg-slate-900 border rounded-xl font-black text-sm text-[#164134] dark:text-emerald-400"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const updated = cmsSettings.programs.filter((_, i) => i !== idx);
+                                                    setCmsSettings({ ...cmsSettings, programs: updated });
+                                                }}
+                                                className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition shrink-0"
+                                                title="Hapus Program ini"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Kategori Program</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Kategori (e.g. Pendidikan)"
+                                                    value={prog.category}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.programs];
+                                                        updated[idx].category = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, programs: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-bold"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Status Program</label>
+                                                <select
+                                                    value={prog.status}
+                                                    onChange={(e) => {
+                                                        const updated = [...cmsSettings.programs];
+                                                        updated[idx].status = e.target.value;
+                                                        setCmsSettings({ ...cmsSettings, programs: updated });
+                                                    }}
+                                                    className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-bold text-xs"
+                                                >
+                                                    <option value="Aktif">Aktif</option>
+                                                    <option value="Musiman">Musiman</option>
+                                                    <option value="Selesai">Selesai</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="text-xs">
+                                            <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Jadwal / Waktu Pelaksanaan</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Setiap Hari Jumat Ba'da Sholat Jumat"
+                                                value={prog.schedule}
+                                                onChange={(e) => {
+                                                    const updated = [...cmsSettings.programs];
+                                                    updated[idx].schedule = e.target.value;
+                                                    setCmsSettings({ ...cmsSettings, programs: updated });
+                                                }}
+                                                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg font-mono"
+                                            />
+                                        </div>
+
+                                        <div className="text-xs">
+                                            <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Deskripsi Ringkas Program</label>
+                                            <textarea
+                                                rows="2"
+                                                placeholder="Penjelasan ringkas mengenai program DKM..."
+                                                value={prog.description}
+                                                onChange={(e) => {
+                                                    const updated = [...cmsSettings.programs];
+                                                    updated[idx].description = e.target.value;
+                                                    setCmsSettings({ ...cmsSettings, programs: updated });
+                                                }}
+                                                className="w-full p-2 bg-white dark:bg-slate-900 border rounded-lg"
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            <div>
-                                <label className="block font-bold mb-1">Nomor Rekening</label>
-                                <input
-                                    type="text"
-                                    value={cmsSettings.bank_account}
-                                    onChange={(e) => setCmsSettings({ ...cmsSettings, bank_account: e.target.value })}
-                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-mono"
-                                />
-                            </div>
-                            <div>
-                                <label className="block font-bold mb-1">Atas Nama (a.n)</label>
-                                <input
-                                    type="text"
-                                    value={cmsSettings.bank_holder}
-                                    onChange={(e) => setCmsSettings({ ...cmsSettings, bank_holder: e.target.value })}
-                                    className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
-                                />
+                        </div>
+
+                        {/* Section 2: Bank Official Infaq & Donasi */}
+                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                            <h3 className="text-xs font-bold text-slate-900 dark:text-white">Rekening Infaq &amp; Bank Official DKM</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                                <div>
+                                    <label className="block font-bold mb-1">Nama Bank Official</label>
+                                    <input
+                                        type="text"
+                                        value={cmsSettings.bank_name}
+                                        onChange={(e) => setCmsSettings({ ...cmsSettings, bank_name: e.target.value })}
+                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold mb-1">Nomor Rekening</label>
+                                    <input
+                                        type="text"
+                                        value={cmsSettings.bank_account}
+                                        onChange={(e) => setCmsSettings({ ...cmsSettings, bank_account: e.target.value })}
+                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-mono"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold mb-1">Atas Nama (a.n)</label>
+                                    <input
+                                        type="text"
+                                        value={cmsSettings.bank_holder}
+                                        onChange={(e) => setCmsSettings({ ...cmsSettings, bank_holder: e.target.value })}
+                                        className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

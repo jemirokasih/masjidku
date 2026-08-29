@@ -6,6 +6,10 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
+- **Dynamic Program DKM CRUD Management**:
+  - Menghadirkan editor manajemen CRUD interaktif untuk Program Pembinaan &amp; Kegiatan DKM (*TPQ Al-Qur'an, Pesantren Kilat, Jumat Berkah Infaq Makan, Kajian Subuh, dll.*) di `ContentManagementPage.jsx` pada tab `/content/program`.
+  - Pengurus DKM dapat secara fleksibel Menambah, Mengedit (Judul, Kategori, Jadwal/Waktu, Deskripsi, Status Aktif/Musiman), dan Menghapus kartu program masjid.
+  - Halaman publik **Program Kegiatan (`PublicMosjidPage.jsx`)** kini secara otomatis membaca dan merender kartu program masjid secara dinamis sesuai data yang dikelola DKM.
 - **Standarisasi Icon UI Clean (Menghapus Icon AI & Emoji)**:
   - Menghapus icon khas AI (`Sparkles`) dan emoji dari label navigasi.
   - Membatasi ikon hanya pada item kategori utama di sidebar (`MainLayout.jsx`), sementara sub-item dropdown menggunakan teks bersih (*text-only*) tanpa ikon sesuai standar enterprise.
