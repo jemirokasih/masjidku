@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Masjidku SaaS RESTful API
+  description: Platform SaaS untuk website Masjid / Mushollah dengan multi-tenant, verifikasi admin, pengelolaan berita, kajian, donasi, dan marketplace tema.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local Development Server
+paths:
+  /auth/register:
+    post:
+      summary: Registrasi Pengurus Masjid
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation, masjid_name, masjid_slug]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password: { type: string }
+                password_confirmation: { type: string }
+                phone: { type: string }
+                masjid_name: { type: string }
+                masjid_slug: { type: string }
+                address: { type: string }
+                city: { type: string }
+                province: { type: string }
+                verification_document: { type: string, format: binary }
+      responses:
+        "201": { description: Registrasi berhasil, status pending verifikasi }
+
+  /auth/login:
+    post:
+      summary: Login User / Pengurus / Admin
+      tags: [Auth]
+      responses:
+        "200": { description: Login berhasil }
+
+  /admin/masjids:
+    get:
+      summary: Daftar Pengajuan Verifikasi Masjid (Platform Admin)
+      tags: [Platform Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: List masjid }
+
+  /admin/masjids/{id}/verify:
+    post:
+      summary: Approve atau Reject Verifikasi Masjid
+      tags: [Platform Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Status verifikasi berhasil diperbarui }
+
+  /tenant/masjid:
+    get:
+      summary: Profil & Detail Masjid Pengurus
+      tags: [Mosque Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Detail profil masjid }
+    put:
+      summary: Update Profil Masjid
+      tags: [Mosque Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Profil diperbarui }
+
+  /tenant/posts:
+    get:
+      summary: Daftar Berita / Update Kajian / Agenda Masjid
+      tags: [Mosque Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: List berita dan kajian }
+    post:
+      summary: Tambah Berita / Update Kajian / Agenda Baru
+      tags: [Mosque Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "201": { description: Konten berhasil dibuat }
+
+  /tenant/donations:
+    get:
+      summary: Daftar Program Infaq & Donasi
+      tags: [Mosque Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: List program donasi }
+
+  /tenant/themes/select:
+    post:
+      summary: Pilih / Ganti Template Website Masjid dari Marketplace
+      tags: [Mosque Admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Template berhasil diubah }
+
+  /public/masjid/{identifier}:
+    get:
+      summary: Get Full Website Payload (Public API for approved mosque)
+      tags: [Public Website]
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema: { type: string }
+          description: Subdomain / Path Slug / Custom Domain masjid
+      responses:
+        "200": { description: Payload website masjid approved }
+        "403": { description: Website masih pending verifikasi }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
