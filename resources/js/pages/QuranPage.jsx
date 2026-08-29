@@ -240,21 +240,49 @@ export default function QuranPage({ embedded = false }) {
                     </Link>
 
                     <nav className={`hidden md:flex items-center space-x-6 text-xs font-semibold ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                        <Link to="/" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>Beranda</Link>
-                        
+                        <Link to="/" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
+                            Beranda
+                        </Link>
+                        <Link to="/m/alikhlas/profile" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
+                            Profil Masjid
+                        </Link>
+                        <Link to="/m/alikhlas/program" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
+                            Program Kegiatan
+                        </Link>
+                        <Link to="/m/alikhlas/berita" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
+                            Berita &amp; Kajian
+                        </Link>
+                        <Link to="/m/alikhlas/donasi" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
+                            Donasi QRIS
+                        </Link>
+
                         {/* Dropdown Menu: Sumber Daya */}
                         <div className="relative py-5 group">
-                            <button className="flex items-center space-x-1 text-[#164134] dark:text-emerald-400 border-b-2 border-[#164134] dark:border-emerald-400 font-bold">
+                            <button className="flex items-center space-x-1.5 text-[#164134] dark:text-emerald-400 border-b-2 border-[#164134] dark:border-emerald-400 font-bold">
                                 <span>Sumber Daya</span>
                                 <ChevronDown className="w-3.5 h-3.5" />
                             </button>
                             <div className={`absolute top-full left-0 w-52 py-2 rounded-2xl border shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}>
-                                <Link to="/quran" className="block px-4 py-2.5 text-xs font-bold text-[#164134] dark:text-emerald-400 bg-slate-50 dark:bg-slate-800">📖 Al-Qur'an Digital</Link>
-                                <Link to="/doa" className={`block px-4 py-2.5 text-xs font-bold transition ${isDarkMode ? 'hover:bg-slate-800 text-slate-300 hover:text-white' : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'}`}>🤲 Doa Harian &amp; Dzikir</Link>
+                                <Link to="/quran" className={`flex items-center space-x-3 px-4 py-2.5 text-xs font-bold transition ${isDarkMode ? 'bg-slate-800 text-emerald-400' : 'bg-slate-50 text-[#164134]'}`}>
+                                    <span className="text-base">📖</span>
+                                    <div>
+                                        <div>Al-Qur'an Digital</div>
+                                        <div className="text-[10px] text-slate-400 font-normal">Teks Arab, Latin &amp; Audio</div>
+                                    </div>
+                                </Link>
+                                <Link to="/doa" className={`flex items-center space-x-3 px-4 py-2.5 text-xs font-bold transition ${isDarkMode ? 'hover:bg-slate-800 text-slate-300 hover:text-white' : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'}`}>
+                                    <span className="text-base">🤲</span>
+                                    <div>
+                                        <div>Doa Harian &amp; Dzikir</div>
+                                        <div className="text-[10px] text-slate-400 font-normal">Kumpulan Doa Adab &amp; Dzikir</div>
+                                    </div>
+                                </Link>
                             </div>
                         </div>
 
-                        <Link to="/tv" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>Display TV</Link>
+                        <Link to="/m/alikhlas/kontak" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
+                            Lokasi &amp; Kontak
+                        </Link>
                     </nav>
 
                     <div className="flex items-center space-x-3">
