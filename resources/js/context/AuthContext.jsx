@@ -36,7 +36,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const res = await api.post('/auth/login', { email, password });
-        const { user: userData, token: tokenData } = res.data.data;
+        const { user: userData, access_token, token: fallbackToken } = res.data.data;
+        const tokenData = access_token || fallbackToken;
         setUser(userData);
         setToken(tokenData);
         localStorage.setItem('mbs_token', tokenData);

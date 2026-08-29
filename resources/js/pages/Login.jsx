@@ -8,8 +8,8 @@ export default function Login() {
     const { login } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
-    const [email, setEmail] = useState('admin@mikrotek.id');
-    const [password, setPassword] = useState('password');
+    const [email, setEmail] = useState('admin@masjidku.com');
+    const [password, setPassword] = useState('password123');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -29,7 +29,7 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#090d16] flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100 selection:bg-blue-600 selection:text-white transition-colors duration-200">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#090d16] flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100 selection:bg-emerald-600 selection:text-white transition-colors duration-200">
             <div className="w-full max-w-md space-y-6">
                 {/* Brand Header */}
                 <div className="text-center space-y-2 relative">
@@ -41,21 +41,21 @@ export default function Login() {
                         {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
                     </button>
 
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 font-black text-white text-xl shadow-lg shadow-blue-500/20">
-                        M
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-600 font-black text-white text-xl shadow-lg shadow-emerald-500/20">
+                        🕌
                     </div>
                     <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        Mikrotek Business Suite <span className="text-blue-600 dark:text-blue-400">NEO</span>
+                        MASJID<span className="text-emerald-600 dark:text-emerald-400">KU</span>
                     </h1>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Platform Manajemen Transaksi, Billing, CRM & Keuangan
+                        Platform SaaS Website Masjid / Mushollah
                     </p>
                 </div>
 
                 {/* Login Card */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-xl p-8 shadow-xl">
-                    <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">Masuk ke Akun Admin</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Masukkan alamat email dan kata sandi untuk melanjutkan.</p>
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">Masuk ke Akun Platform</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Masukkan email dan kata sandi pengurus / admin platform.</p>
 
                     {error && (
                         <div className="mb-5 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
@@ -75,8 +75,8 @@ export default function Login() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="admin@mikrotek.id"
-                                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                                    placeholder="admin@masjidku.com"
+                                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
                                 />
                             </div>
                         </div>
@@ -93,7 +93,7 @@ export default function Login() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
                                 />
                             </div>
                         </div>
@@ -101,7 +101,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full mt-2 py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold text-xs text-white shadow-md shadow-blue-500/20 flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
+                            className="w-full mt-2 py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold text-xs text-white shadow-md shadow-emerald-500/20 flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
                         >
                             {loading ? (
                                 <>
@@ -120,15 +120,15 @@ export default function Login() {
                     {/* Quick Info Footer */}
                     <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                         <div className="flex items-center space-x-1.5">
-                            <Shield className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                            <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                             <span>Sanctum Token Secured</span>
                         </div>
-                        <span className="font-mono text-[10px]">v2.0 Enterprise</span>
+                        <span className="font-mono text-[10px]">v1.0 SaaS</span>
                     </div>
                 </div>
 
                 <p className="text-center text-[11px] text-slate-500 dark:text-slate-400">
-                    &copy; 2026 PT Mikrotek Zemiro Indonesia.
+                    &copy; 2026 Masjidku Platform.
                 </p>
             </div>
         </div>
