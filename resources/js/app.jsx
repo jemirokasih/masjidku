@@ -13,6 +13,9 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import MasjidProfilePage from './pages/MasjidProfilePage';
+import ContentManagementPage from './pages/ContentManagementPage';
+import SettingsPage from './pages/SettingsPage';
 import ClientList from './pages/Clients/ClientList';
 import ClientFormPage from './pages/Clients/ClientFormPage';
 import ClientDetailPage from './pages/Clients/ClientDetailPage';
@@ -54,7 +57,6 @@ import OvertimeRequestPage from './pages/HR/Overtime/OvertimeRequestPage';
 import OvertimeManagementPage from './pages/HR/Overtime/OvertimeManagementPage';
 import UserManagement from './pages/Users/UserManagement';
 import RoleManagementPage from './pages/Users/RoleManagementPage';
-import SettingsPage from './pages/Settings/SettingsPage';
 import AuditLogList from './pages/AuditLogs/AuditLogList';
 import DeliveryOrderList from './pages/DeliveryOrders/DeliveryOrderList';
 import DeliveryOrderFormPage from './pages/DeliveryOrders/DeliveryOrderFormPage';
@@ -213,6 +215,9 @@ export default function App() {
                         {/* App Routes */}
                         <Route path="/" element={<RootRoute />}>
                             <Route index element={<Dashboard />} />
+                            <Route path="masjid-profile" element={<MasjidProfilePage />} />
+                            <Route path="content" element={<ContentManagementPage />} />
+                            <Route path="settings" element={<SettingsPage />} />
                             <Route path="clients" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientList /></ProtectedRoute>} />
                             <Route path="clients/create" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientFormPage /></ProtectedRoute>} />
                             <Route path="clients/:id" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientDetailPage /></ProtectedRoute>} />

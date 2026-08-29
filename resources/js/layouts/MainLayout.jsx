@@ -128,84 +128,12 @@ export default function MainLayout() {
 
     const navGroups = [
         {
-            groupName: 'RINGKASAN',
+            groupName: 'UTAMA',
             items: [
-                { name: 'Dashboard', path: '/', icon: LayoutDashboard, roles: ['superadmin', 'admin', 'finance', 'project_manager', 'hr', 'staff'] },
-            ]
-        },
-        {
-            groupName: 'KLIEN',
-            items: [
-                { name: 'Klien', path: '/clients', icon: Users, roles: ['superadmin', 'admin', 'finance', 'project_manager'], module: 'clients' },
-                { name: 'Kontak', path: '/client-contacts', icon: UserCheck, roles: ['superadmin', 'admin', 'finance', 'project_manager'], module: 'clients' },
-                { name: 'Prospek & Leads', path: '/leads', icon: Target, roles: ['superadmin', 'admin', 'finance', 'project_manager', 'leads'], module: 'leads' },
-            ]
-        },
-        {
-            groupName: 'PROJECT',
-            items: [
-                { name: 'Manajemen Project', path: '/projects', icon: FolderKanban, roles: ['superadmin', 'admin', 'project_manager', 'finance', 'staff'], module: 'projects' },
-                { name: 'Dokumen Project', path: '/project-documents', icon: FileText, roles: ['superadmin', 'admin', 'project_manager', 'finance', 'staff'], module: 'projects' },
-                { name: 'Tugas Saya', path: '/my-tasks', icon: CheckSquare, roles: ['superadmin', 'admin', 'project_manager', 'finance', 'staff'] },
-            ]
-        },
-        {
-            groupName: 'IT',
-            items: [
-                { name: 'Manajemen Domain', path: '/domains', icon: Globe, roles: ['superadmin', 'admin', 'project_manager'], module: 'domains' },
-                { name: 'Webmail Client', path: '/webmail', icon: Mail, roles: ['superadmin', 'admin', 'finance', 'project_manager', 'hr', 'staff'] },
-            ]
-        },
-        {
-            groupName: 'TRANSAKSI',
-            items: [
-                { name: 'Penawaran (Quotes)', path: '/quotes', icon: Receipt, roles: ['superadmin', 'admin', 'finance', 'project_manager'], module: 'quotes' },
-                { name: 'Tagihan (Invoice)', path: '/invoices', icon: FileText, roles: ['superadmin', 'admin', 'finance'], module: 'invoices' },
-                { name: 'Pembayaran & Kwitansi', path: '/payments', icon: CreditCard, roles: ['superadmin', 'admin', 'finance'], module: 'payments' },
-                { name: 'Faktur Pajak (e-Faktur)', path: '/tax-invoices', icon: FileCheck, roles: ['superadmin', 'admin', 'finance', 'project_manager'], module: 'tax_invoices' },
-                { name: 'Surat Jalan (Delivery Order)', path: '/delivery-orders', icon: Truck, roles: ['superadmin', 'admin', 'finance', 'project_manager'], module: 'delivery_orders' },
-            ]
-        },
-        {
-            groupName: 'VENDOR & PENGADAAN',
-            items: [
-                { name: 'Master Vendor', path: '/vendors', icon: Building2, roles: ['superadmin', 'admin', 'finance', 'project_manager'] },
-                { name: 'Penawaran Vendor (Quote In)', path: '/vendor-quotes', icon: FileText, roles: ['superadmin', 'admin', 'finance', 'project_manager'] },
-                { name: 'Tagihan Vendor (Invoice In)', path: '/vendor-invoices', icon: Receipt, roles: ['superadmin', 'admin', 'finance', 'project_manager'] },
-            ]
-        },
-        {
-            groupName: 'OPERASIONAL & HR',
-            items: [
-                { name: 'Karyawan', path: '/employees', icon: UserCheck, roles: ['superadmin', 'admin', 'hr'], module: 'hr' },
-                { name: 'Kontrak Kerja', path: '/hr/contracts', icon: FileText, roles: ['superadmin', 'admin', 'hr'], module: 'hr' },
-                { name: 'Penggajian (Payroll)', path: '/hr/payroll', icon: Banknote, roles: ['superadmin', 'admin', 'hr', 'finance'], module: 'hr' },
-                { name: 'Slip Gaji Saya', path: '/hr/my-payslips', icon: FileSpreadsheet, roles: ['superadmin', 'admin', 'hr', 'finance', 'project_manager', 'staff'] },
-                { name: 'Presensi & Kehadiran', path: '/hr', icon: CalendarClock, roles: ['superadmin', 'admin', 'hr', 'project_manager', 'staff'] },
-                { name: 'Rekap Absensi Bulanan', path: '/hr/attendance-recap', icon: Calendar, roles: ['superadmin', 'admin', 'hr', 'project_manager'], module: 'hr' },
-                { name: 'Pengajuan & Manajemen Cuti', path: '/hr/leaves', icon: CalendarDays, roles: ['superadmin', 'admin', 'hr', 'project_manager', 'staff'] },
-                { name: 'Pengajuan Reimbursement', path: '/hr/reimbursements', icon: Receipt, roles: ['superadmin', 'admin', 'hr', 'finance', 'project_manager', 'staff'] },
-                { name: 'Pengajuan Lembur', path: '/hr/overtime', icon: Clock, roles: ['superadmin', 'admin', 'hr', 'finance', 'project_manager', 'staff'] },
-                { name: 'Persetujuan Lembur', path: '/hr/overtime-management', icon: Timer, roles: ['superadmin', 'admin', 'hr', 'finance'], module: 'hr' },
-            ]
-        },
-        {
-            groupName: 'PRODUK & JASA',
-            items: [
-                { name: 'Katalog Produk & Jasa', path: '/products', icon: Package, roles: ['superadmin', 'admin', 'finance'], module: 'products' },
-                { name: 'Kategori', path: '/products?tab=categories', icon: Tag, roles: ['superadmin', 'admin', 'finance'], module: 'products' },
-                { name: 'Satuan Unit', path: '/products?tab=units', icon: Layers, roles: ['superadmin', 'admin', 'finance'], module: 'products' },
-            ]
-        },
-        {
-            groupName: 'SISTEM',
-            items: [
-                { name: 'Pusat Notifikasi', path: '/notifications', icon: Bell, roles: ['superadmin', 'admin', 'finance', 'project_manager', 'hr', 'staff'] },
-                { name: 'Manajemen User', path: '/users', icon: ShieldCheck, roles: ['superadmin', 'admin'], module: 'users' },
-                { name: 'Role & Hak Akses', path: '/roles', icon: Shield, roles: ['superadmin', 'admin'], module: 'roles' },
-                { name: 'Audit Trail / Log Aktivitas', path: '/audit-logs', icon: History, roles: ['superadmin', 'admin'], module: 'audit_logs' },
-                { name: 'Backup Data', path: '/settings?tab=backup', icon: Database, roles: ['superadmin', 'admin'], module: 'settings' },
-                { name: 'Pengaturan Sistem', path: '/settings', icon: Settings, roles: ['superadmin', 'admin'], module: 'settings' },
+                { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+                { name: 'Profile Masjid', path: '/masjid-profile', icon: Building2 },
+                { name: 'Kelola Konten', path: '/content', icon: FileText },
+                { name: 'Pengaturan', path: '/settings', icon: Settings },
             ]
         }
     ];

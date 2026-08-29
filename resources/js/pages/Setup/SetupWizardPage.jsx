@@ -1,618 +1,622 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import { 
-    CheckCircle2, AlertTriangle, ShieldCheck, Server, Building, Key, 
-    Database, Sparkles, Layers, ArrowRight, ArrowLeft, RefreshCw, Lock, 
-    Clock, Check, Box, FileText, Users, DollarSign, ChevronRight
+    ArrowLeft, ArrowRight, Check, CheckCircle2, ShieldCheck, 
+    Upload, Building, Globe, Palette, FileText, CheckSquare, 
+    Sparkles, RefreshCw, AlertCircle
 } from 'lucide-react';
 
 export default function SetupWizardPage() {
     const navigate = useNavigate();
+    const { user } = useAuth();
+
     const [currentStep, setCurrentStep] = useState(1);
-    const [loadingRequirements, setLoadingRequirements] = useState(true);
-    const [requirements, setRequirements] = useState(null);
     const [submitting, setSubmitting] = useState(false);
-    const [installed, setInstalled] = useState(false);
+    const [checkingDomain, setCheckingDomain] = useState(false);
+    const [domainAvailable, setDomainAvailable] = useState(null);
 
-    // Form State
+    // Form State for 7 Setup Steps
     const [formData, setFormData] = useState({
-        company_name: 'PT Mikrotek Zemiro Indonesia',
-        company_email: 'admin@mikrotek.co.id',
-        company_phone: '021-5550192',
-        company_address: 'Jl. TB Simatupang No. 88, Jakarta Selatan',
-        timezone: 'Asia/Jakarta',
-        currency_code: 'IDR',
-        currency_symbol: 'Rp',
-
-        admin_name: 'Super Administrator',
-        admin_email: 'admin@mikrotek.co.id',
-        admin_password: '',
-        admin_password_confirmation: '',
-
-        data_mode: 'minimal', // 'empty', 'minimal', 'sample'
+        masjid_slug: user?.masjid?.slug || '',
+        active_theme_id: user?.masjid?.active_theme_id || 1,
+        masjid_name: user?.masjid?.name || '',
+        email: user?.masjid?.email || user?.email || '',
+        address: user?.masjid?.address || '',
+        phone: user?.masjid?.phone || user?.phone || '',
+        description: '',
+        province: user?.masjid?.province || '',
+        city: user?.masjid?.city || '',
+        district: '',
+        village: '',
+        postal_code: user?.masjid?.postal_code || '',
+        agreed_terms: false,
+        package_plan: 'free', // 'free' or 'pro'
     });
 
-    const [agreed, setAgreed] = useState(false);
+    const [skFile, setSkFile] = useState(null);
+    const [wakafFile, setWakafFile] = useState(null);
 
-    const fetchRequirements = async () => {
-        setLoadingRequirements(true);
+    const [themesList, setThemesList] = useState([]);
+
+    useEffect(() => {
+        const fetchThemes = async () => {
+            try {
+                const res = await api.get('/tenant/themes');
+                setThemesList(res.data.data || []);
+            } catch (err) {
+                console.error('Failed to fetch themes', err);
+            }
+        };
+        fetchThemes();
+    }, []);
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleCheckDomain = async () => {
+        if (!formData.masjid_slug) {
+            alert('Harap isi nama domain yang ingin diperiksa.');
+            return;
+        }
+        setCheckingDomain(true);
+        setDomainAvailable(null);
+
         try {
-            const res = await api.get('/setup/status');
-            setRequirements(res.data.data);
-            if (res.data.data?.is_installed) {
-                setInstalled(true);
+            // Check domain via public API
+            const res = await api.get(`/public/masjid/${formData.masjid_slug}`);
+            // If exists & not own masjid
+            if (res.data?.data?.masjid && res.data.data.masjid.id !== user?.masjid?.id) {
+                setDomainAvailable(false);
+            } else {
+                setDomainAvailable(true);
             }
         } catch (err) {
-            console.error('Error fetching setup requirements:', err);
+            // 404 means available
+            setDomainAvailable(true);
         } finally {
-            setLoadingRequirements(false);
+            setCheckingDomain(false);
         }
     };
 
-    useEffect(() => {
-        fetchRequirements();
-    }, []);
-
     const handleNextStep = () => {
-        if (currentStep === 2) {
-            if (!formData.company_name || !formData.company_email || !formData.admin_name || !formData.admin_email || !formData.admin_password) {
-                alert('Harap lengkapi semua bidang wajib (Nama Perusahaan, Email Perusahaan, Nama Admin, Email Admin, & Password).');
-                return;
-            }
-            if (formData.admin_password.length < 8) {
-                alert('Password admin minimal 8 karakter.');
-                return;
-            }
-            if (formData.admin_password !== formData.admin_password_confirmation) {
-                alert('Konfirmasi password tidak cocok dengan password admin.');
-                return;
-            }
+        if (currentStep === 1 && !formData.masjid_slug) {
+            alert('Harap isi nama domain terlebih dahulu.');
+            return;
         }
-        setCurrentStep(prev => Math.min(prev + 1, 5));
+        if (currentStep === 3 && (!formData.masjid_name || !formData.email || !formData.address)) {
+            alert('Harap isi Nama Masjid, Email, dan Alamat Lengkap.');
+            return;
+        }
+        if (currentStep === 5 && !formData.agreed_terms) {
+            alert('Anda harus menyetujui Syarat & Ketentuan untuk melanjutkan.');
+            return;
+        }
+        if (currentStep === 6) {
+            // Submit form to API
+            handleSubmitSetup();
+            return;
+        }
+        setCurrentStep(prev => Math.min(prev + 1, 7));
     };
 
     const handlePrevStep = () => {
         setCurrentStep(prev => Math.max(prev - 1, 1));
     };
 
-    const handleRunSetup = async () => {
+    const handleSubmitSetup = async () => {
         setSubmitting(true);
         try {
-            const res = await api.post('/setup/run', formData);
-            setInstalled(true);
-            setCurrentStep(5);
+            const data = new FormData();
+            data.append('name', formData.masjid_name);
+            data.append('slug', formData.masjid_slug);
+            data.append('address', formData.address);
+            data.append('city', formData.city);
+            data.append('province', formData.province);
+            data.append('postal_code', formData.postal_code);
+            data.append('phone', formData.phone);
+            data.append('email', formData.email);
+
+            if (skFile) {
+                data.append('verification_document', skFile);
+            }
+
+            // Update basic profile
+            await api.put('/tenant/masjid', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            // Update detailed info
+            await api.put('/tenant/masjid/info', {
+                description: formData.description,
+            });
+
+            // Select theme
+            if (formData.active_theme_id) {
+                await api.post('/tenant/themes/select', {
+                    theme_id: formData.active_theme_id
+                });
+            }
+
+            setCurrentStep(7);
         } catch (err) {
-            alert('Gagal menjalankan instalasi: ' + (err.response?.data?.message || err.message));
+            alert('Gagal menyimpan setup: ' + (err.response?.data?.message || err.message));
         } finally {
             setSubmitting(false);
         }
     };
 
-    if (loadingRequirements) {
-        return (
-            <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6">
-                <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-3" />
-                <span className="text-sm font-semibold text-slate-400">Memeriksa kelayakan server &amp; status instalasi...</span>
-            </div>
-        );
-    }
-
-    if (installed && currentStep !== 5) {
-        return (
-            <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6 text-center">
-                <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-                    <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
-                        <Lock className="w-8 h-8" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-slate-100">Wizard Instalasi Terkunci</h2>
-                        <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                            Sistem Mikrotek Business Suite Neo telah selesai diinstal dan terkunci demi keamanan. Halaman setup tidak dapat diakses kembali.
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => navigate('/login')}
-                        className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center space-x-2"
-                    >
-                        <span>Masuk ke Halaman Login</span>
-                        <ArrowRight className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
-        );
-    }
+    const steps = [
+        { id: 1, label: 'Nama Domain' },
+        { id: 2, label: 'Template' },
+        { id: 3, label: 'Info Masjid' },
+        { id: 4, label: 'Verifikasi' },
+        { id: 5, label: 'Ketentuan' },
+        { id: 6, label: 'Pilih Paket' },
+        { id: 7, label: 'Selesai' },
+    ];
 
     return (
-        <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto w-full space-y-8">
-                {/* Brand Header */}
-                <div className="text-center space-y-2">
-                    <div className="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>MBS NEO INSTALLATION WIZARD</span>
+        <div className="min-h-screen bg-slate-100 dark:bg-[#070a12] text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-600 selection:text-white">
+            
+            {/* Header matching vercel design (Dark Emerald Header) */}
+            <header className="bg-[#064e3b] text-white px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
+                <div className="flex items-center space-x-3">
+                    <Link to="/" className="px-3 py-1.5 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-xs font-semibold text-white flex items-center space-x-1.5 transition">
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Kembali</span>
+                    </Link>
+                    <div className="flex items-center space-x-2 border-l border-emerald-700/60 pl-3">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-700 flex items-center justify-center text-lg">🕌</div>
+                        <div>
+                            <h1 className="font-extrabold text-sm tracking-tight text-white leading-none">MasjidKu</h1>
+                            <span className="text-[9px] font-bold tracking-widest uppercase text-emerald-300">SETUP WEBSITE</span>
+                        </div>
                     </div>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                        Mikrotek Business Suite Neo
-                    </h1>
-                    <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
-                        Panduan instalasi awal &amp; inisialisasi basis data sistem manajemen perusahaan ERP/CRM enterprise.
-                    </p>
                 </div>
 
-                {/* Stepper Bar */}
-                <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-xl">
-                    <div className="flex justify-between items-center max-w-2xl mx-auto relative">
-                        {[
-                            { step: 1, label: 'Persyaratan' },
-                            { step: 2, label: 'Profil & Admin' },
-                            { step: 3, label: 'Opsi Data' },
-                            { step: 4, label: 'Konfirmasi' },
-                            { step: 5, label: 'Selesai' },
-                        ].map((s) => {
-                            const isDone = currentStep > s.step;
-                            const isCurrent = currentStep === s.step;
-                            return (
-                                <div key={s.step} className="flex flex-col items-center relative z-10">
-                                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs transition-all ${
-                                        isDone
-                                            ? 'bg-emerald-500 text-slate-950 font-extrabold'
-                                            : isCurrent
-                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 font-extrabold ring-4 ring-blue-500/20'
-                                                : 'bg-slate-800 text-slate-500 border border-slate-700'
-                                    }`}>
-                                        {isDone ? <Check className="w-5 h-5 stroke-[3]" /> : s.step}
-                                    </div>
-                                    <span className={`text-[11px] font-bold mt-1.5 hidden sm:block ${
-                                        isCurrent ? 'text-blue-400' : isDone ? 'text-emerald-400' : 'text-slate-500'
-                                    }`}>
-                                        {s.label}
-                                    </span>
+                <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-emerald-200">
+                    <span>{user?.name || 'PENGURUS'}</span>
+                    <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-black flex items-center justify-center text-xs border border-emerald-600">
+                        {user?.name ? user.name.charAt(0).toUpperCase() : 'F'}
+                    </div>
+                </div>
+            </header>
+
+            {/* Stepper Progress Bar */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm py-4 px-4 overflow-x-auto">
+                <div className="max-w-4xl mx-auto flex items-center justify-between min-w-[650px]">
+                    {steps.map((s) => {
+                        const isDone = currentStep > s.id;
+                        const isCurrent = currentStep === s.id;
+                        return (
+                            <div key={s.id} className="flex items-center space-x-2">
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                    isDone
+                                        ? 'bg-amber-500 text-white'
+                                        : isCurrent
+                                            ? 'bg-emerald-700 text-white ring-4 ring-emerald-500/20'
+                                            : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
+                                }`}>
+                                    {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : s.id}
                                 </div>
-                            );
-                        })}
-                    </div>
+                                <span className={`text-xs font-bold whitespace-nowrap ${
+                                    isCurrent ? 'text-emerald-800 dark:text-emerald-400 border-b-2 border-emerald-600 pb-0.5' : isDone ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400'
+                                }`}>
+                                    {s.label}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
+            </div>
 
-                {/* Main Card Content */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-                    {/* STEP 1: System Requirements Check */}
+            {/* Step Card Container */}
+            <main className="max-w-4xl mx-auto px-4 py-8">
+                <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl space-y-6">
+
+                    {/* STEP 1: Nama Domain */}
                     {currentStep === 1 && (
                         <div className="space-y-6">
                             <div>
-                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                                    <Server className="w-5 h-5 text-blue-400" />
-                                    <span>Langkah 1: Pemeriksaan Kelayakan Server &amp; Lingkungan</span>
-                                </h2>
-                                <p className="text-xs text-slate-400 mt-1">
-                                    Memastikan PHP, ekstensi, hak akses direktori, dan koneksi basis data server Anda siap digunakan.
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tentukan Nama Domain Website</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Domain ini akan menjadi alamat publik website masjid Anda dan tidak dapat diubah setelah terdaftar.
+                                </p>
+                            </div>
+
+                            <div className="space-y-3 pt-2">
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                    Nama Domain <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="text"
+                                        name="masjid_slug"
+                                        value={formData.masjid_slug}
+                                        onChange={handleChange}
+                                        placeholder="nama-masjid-anda"
+                                        className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                                    />
+                                    <div className="px-4 py-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-400 rounded-xl font-mono text-xs font-bold flex items-center space-x-1.5">
+                                        <Globe className="w-3.5 h-3.5" />
+                                        <span>.masjidku.id</span>
+                                    </div>
+                                </div>
+                                <p className="text-[11px] text-slate-400">
+                                    Gunakan huruf kecil, angka, dan tanda hubung (-). Contoh: <code className="text-emerald-600 dark:text-emerald-400">masjid-al-furqon</code>
+                                </p>
+
+                                {domainAvailable !== null && (
+                                    <div className={`p-3 rounded-xl text-xs font-semibold flex items-center space-x-2 ${
+                                        domainAvailable 
+                                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' 
+                                            : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
+                                    }`}>
+                                        {domainAvailable ? (
+                                            <>
+                                                <CheckCircle2 className="w-4 h-4" />
+                                                <span>Domain <strong>{formData.masjid_slug}.masjidku.id</strong> tersedia!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <AlertCircle className="w-4 h-4" />
+                                                <span>Domain sudah digunakan oleh masjid lain. Silakan pilih nama lain.</span>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex items-center space-x-3 pt-4">
+                                <button
+                                    onClick={handleCheckDomain}
+                                    disabled={checkingDomain}
+                                    className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition"
+                                >
+                                    {checkingDomain ? 'Memeriksa...' : 'Cek Ketersediaan'}
+                                </button>
+                                <button
+                                    onClick={handleNextStep}
+                                    className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-700/20 flex items-center space-x-2 transition"
+                                >
+                                    <span>Lanjutkan</span>
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 2: Template Desain */}
+                    {currentStep === 2 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pilih Template Desain</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Pilih tampilan visual untuk website masjid Anda. Template bisa diganti kapan saja dari dashboard.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                                <div 
+                                    onClick={() => setFormData({ ...formData, active_theme_id: 1 })}
+                                    className={`rounded-2xl border p-4 cursor-pointer transition-all space-y-3 ${
+                                        formData.active_theme_id === 1
+                                            ? 'border-emerald-600 bg-emerald-500/5 ring-2 ring-emerald-500/20'
+                                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'
+                                    }`}
+                                >
+                                    <div className="h-36 rounded-xl bg-emerald-900/30 flex items-center justify-center font-bold text-emerald-500 text-xs relative">
+                                        Preview Zamrud Harmoni
+                                        {formData.active_theme_id === 1 && (
+                                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-[10px]">
+                                                Dipilih
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">Zamrud Harmoni</h4>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Nuansa hijau alami dengan aksen emas. Kesan bersih dan elegan.</p>
+                                </div>
+
+                                <div 
+                                    onClick={() => setFormData({ ...formData, active_theme_id: 2 })}
+                                    className={`rounded-2xl border p-4 cursor-pointer transition-all space-y-3 ${
+                                        formData.active_theme_id === 2
+                                            ? 'border-emerald-600 bg-emerald-500/5 ring-2 ring-emerald-500/20'
+                                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'
+                                    }`}
+                                >
+                                    <div className="h-36 rounded-xl bg-blue-900/30 flex items-center justify-center font-bold text-blue-400 text-xs relative">
+                                        Preview Biru Andalusia
+                                        {formData.active_theme_id === 2 && (
+                                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-[10px]">
+                                                Dipilih
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">Biru Andalusia</h4>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Biru safir elegan dengan sentuhan perak. Tampilan profesional.</p>
+                                </div>
+
+                                <div 
+                                    className="rounded-2xl border border-slate-200 dark:border-slate-800 p-4 opacity-60 space-y-3 relative"
+                                >
+                                    <div className="h-36 rounded-xl bg-amber-900/30 flex items-center justify-center font-bold text-amber-400 text-xs">
+                                        Pesona Hijaz (Segera Hadir)
+                                    </div>
+                                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">Pesona Hijaz</h4>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Nuansa pasir hangat dengan ornamen kaligrafi.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between pt-4">
+                                <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
+                                    Kembali
+                                </button>
+                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                    <span>Lanjutkan</span>
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 3: Info Masjid */}
+                    {currentStep === 3 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Informasi Umum Masjid</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Lengkapi data profil masjid Anda. Informasi ini akan ditampilkan di website publik.
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                {/* PHP Version Card */}
-                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-bold text-slate-300">Versi PHP Server</span>
-                                        {requirements?.php?.satisfied ? (
-                                            <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 text-[10px]">Pass</span>
-                                        ) : (
-                                            <span className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20 text-[10px]">Fail</span>
-                                        )}
-                                    </div>
-                                    <div className="text-slate-400 font-mono text-[11px]">
-                                        Versi: <strong className="text-white">{requirements?.php?.version}</strong> (Minimal {requirements?.php?.min_required})
-                                    </div>
-                                </div>
-
-                                {/* Database Connection Card */}
-                                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-bold text-slate-300">Koneksi Database PDO</span>
-                                        {requirements?.database?.connected ? (
-                                            <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 text-[10px]">Connected</span>
-                                        ) : (
-                                            <span className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20 text-[10px]">Disconnected</span>
-                                        )}
-                                    </div>
-                                    <div className="text-slate-400 font-mono text-[11px] truncate">
-                                        Status: <strong className="text-white">{requirements?.database?.connected ? 'Terhubung dengan Baik' : requirements?.database?.error || 'Gagal terhubung'}</strong>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Required Extensions */}
-                            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                                <h4 className="font-bold text-xs text-slate-200">Ekstensi PHP Wajib</h4>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-                                    {Object.entries(requirements?.extensions || {}).map(([ext, pass]) => (
-                                        <div key={ext} className="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                                            <span className="font-mono text-slate-300">{ext}</span>
-                                            {pass ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Permissions */}
-                            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                                <h4 className="font-bold text-xs text-slate-200">Hak Akses Direktori (Writable Permissions)</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
-                                    <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                                        <span className="text-slate-300">storage/</span>
-                                        {requirements?.permissions?.storage_writable ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />}
-                                    </div>
-                                    <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                                        <span className="text-slate-300">bootstrap/cache/</span>
-                                        {requirements?.permissions?.bootstrap_cache_writable ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />}
-                                    </div>
-                                    <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                                        <span className="text-slate-300">.env File</span>
-                                        {requirements?.permissions?.env_writable ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end pt-4">
-                                <button
-                                    onClick={handleNextStep}
-                                    disabled={!requirements?.can_proceed}
-                                    className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center space-x-2 transition-all"
-                                >
-                                    <span>Lanjut ke Langkah 2: Profil &amp; Admin</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* STEP 2: Company Profile & Superadmin Credentials */}
-                    {currentStep === 2 && (
-                        <div className="space-y-6 text-xs">
-                            <div>
-                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                                    <Building className="w-5 h-5 text-blue-400" />
-                                    <span>Langkah 2: Profil Perusahaan &amp; Akun Superadmin</span>
-                                </h2>
-                                <p className="text-xs text-slate-400 mt-1">
-                                    Isi data identitas bisnis utama dan kredensial akun administrator pertama Anda.
-                                </p>
-                            </div>
-
-                            {/* Section: Company Profile */}
-                            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-                                <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
-                                    <Building className="w-4 h-4 text-blue-400" />
-                                    <span>Identitas Perusahaan</span>
-                                </h3>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Nama Perusahaan *</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={formData.company_name}
-                                            onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Email Perusahaan *</label>
-                                        <input
-                                            type="email"
-                                            required
-                                            value={formData.company_email}
-                                            onChange={(e) => setFormData({ ...formData, company_email: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Telepon</label>
-                                        <input
-                                            type="text"
-                                            value={formData.company_phone}
-                                            onChange={(e) => setFormData({ ...formData, company_phone: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Zona Waktu Perusahaan</label>
-                                        <select
-                                            value={formData.timezone}
-                                            onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        >
-                                            <option value="Asia/Jakarta">WIB — Asia/Jakarta (UTC+7)</option>
-                                            <option value="Asia/Makassar">WITA — Asia/Makassar (UTC+8)</option>
-                                            <option value="Asia/Jayapura">WIT — Asia/Jayapura (UTC+9)</option>
-                                            <option value="Asia/Singapore">SGT — Asia/Singapore (UTC+8)</option>
-                                            <option value="UTC">UTC — GMT (UTC+0)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
                                 <div>
-                                    <label className="block font-bold text-slate-300 mb-1">Alamat Perusahaan</label>
+                                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Masjid <span className="text-rose-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="masjid_name"
+                                        required
+                                        value={formData.masjid_name}
+                                        onChange={handleChange}
+                                        placeholder="Contoh: Masjid Al-Furqon"
+                                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email Masjid <span className="text-rose-500">*</span></label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        placeholder="contact@furqon.com"
+                                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Alamat Lengkap <span className="text-rose-500">*</span></label>
                                     <textarea
+                                        name="address"
                                         rows="2"
-                                        value={formData.company_address}
-                                        onChange={(e) => setFormData({ ...formData, company_address: e.target.value })}
-                                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
+                                        required
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        placeholder="Jalan, No. Bangunan, RT/RW..."
+                                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                                    ></textarea>
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">No. Telepon / HP</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        placeholder="08123456789"
+                                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Kota / Kabupaten</label>
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        value={formData.city}
+                                        onChange={handleChange}
+                                        placeholder="Jakarta Selatan"
+                                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi Singkat (Opsional)</label>
+                                    <textarea
+                                        name="description"
+                                        rows="2"
+                                        value={formData.description}
+                                        onChange={handleChange}
+                                        placeholder="Ceritakan singkat tentang sejarah atau profil masjid ini..."
+                                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
                                     ></textarea>
                                 </div>
                             </div>
 
-                            {/* Section: Superadmin Account */}
-                            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-                                <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
-                                    <Key className="w-4 h-4 text-blue-400" />
-                                    <span>Akun Akun Super Administrator</span>
-                                </h3>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Nama Lengkap Admin *</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={formData.admin_name}
-                                            onChange={(e) => setFormData({ ...formData, admin_name: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Email Login Admin *</label>
-                                        <input
-                                            type="email"
-                                            required
-                                            value={formData.admin_email}
-                                            onChange={(e) => setFormData({ ...formData, admin_email: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Password Admin * (Min 8 Karakter)</label>
-                                        <input
-                                            type="password"
-                                            required
-                                            value={formData.admin_password}
-                                            onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block font-bold text-slate-300 mb-1">Konfirmasi Password *</label>
-                                        <input
-                                            type="password"
-                                            required
-                                            value={formData.admin_password_confirmation}
-                                            onChange={(e) => setFormData({ ...formData, admin_password_confirmation: e.target.value })}
-                                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-blue-500 font-semibold text-xs"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
                             <div className="flex justify-between pt-4">
-                                <button
-                                    onClick={handlePrevStep}
-                                    className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center space-x-1.5 transition-all"
-                                >
-                                    <ArrowLeft className="w-4 h-4" />
-                                    <span>Kembali</span>
+                                <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
+                                    Kembali
                                 </button>
-                                <button
-                                    onClick={handleNextStep}
-                                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center space-x-2 transition-all"
-                                >
-                                    <span>Lanjut ke Langkah 3: Mode Data</span>
+                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                    <span>Lanjutkan</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* STEP 3: Data Initialization Options */}
-                    {currentStep === 3 && (
-                        <div className="space-y-6 text-xs">
-                            <div>
-                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                                    <Database className="w-5 h-5 text-blue-400" />
-                                    <span>Langkah 3: Opsi Inisialisasi Basis Data</span>
-                                </h2>
-                                <p className="text-xs text-slate-400 mt-1">
-                                    Pilih opsi penyemaian data awal sesuai kebutuhan lingkungan penginstalan Anda.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {/* Option 1: Data Kosong */}
-                                <div
-                                    onClick={() => setFormData({ ...formData, data_mode: 'empty' })}
-                                    className={`p-5 rounded-2xl border cursor-pointer transition-all space-y-3 flex flex-col justify-between ${
-                                        formData.data_mode === 'empty'
-                                            ? 'bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/30'
-                                            : 'bg-slate-950 border-slate-800 hover:border-slate-700'
-                                    }`}
-                                >
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <div className="p-2.5 rounded-xl bg-slate-800 text-slate-300">
-                                                <Box className="w-5 h-5" />
-                                            </div>
-                                            {formData.data_mode === 'empty' && (
-                                                <span className="px-2 py-0.5 rounded-full bg-blue-500 text-slate-950 font-extrabold text-[10px]">Terpilih</span>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-sm text-white">1. Data Kosong</h3>
-                                            <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                                                Hanya membuat akun Superadmin &amp; profil perusahaan. Tanpa master data atau sample data.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="pt-3 border-t border-slate-800/80 text-[10px] text-slate-500 font-mono">
-                                        Cocok untuk: Production Baru
-                                    </div>
-                                </div>
-
-                                {/* Option 2: Data Minimal */}
-                                <div
-                                    onClick={() => setFormData({ ...formData, data_mode: 'minimal' })}
-                                    className={`p-5 rounded-2xl border cursor-pointer transition-all space-y-3 flex flex-col justify-between ${
-                                        formData.data_mode === 'minimal'
-                                            ? 'bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/30'
-                                            : 'bg-slate-950 border-slate-800 hover:border-slate-700'
-                                    }`}
-                                >
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                                                <Layers className="w-5 h-5" />
-                                            </div>
-                                            {formData.data_mode === 'minimal' && (
-                                                <span className="px-2 py-0.5 rounded-full bg-blue-500 text-slate-950 font-extrabold text-[10px]">Terpilih</span>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-sm text-white">2. Data Minimal</h3>
-                                            <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                                                Termasuk akun Admin, master Departemen, Jabatan, Status Kerja, Tarif Pajak (PPN 11%), &amp; Metode Pembayaran.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="pt-3 border-t border-slate-800/80 text-[10px] text-indigo-400 font-mono font-bold">
-                                        Rekomendasi Siap Pakai
-                                    </div>
-                                </div>
-
-                                {/* Option 3: Import Data Sample */}
-                                <div
-                                    onClick={() => setFormData({ ...formData, data_mode: 'sample' })}
-                                    className={`p-5 rounded-2xl border cursor-pointer transition-all space-y-3 flex flex-col justify-between ${
-                                        formData.data_mode === 'sample'
-                                            ? 'bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/30'
-                                            : 'bg-slate-950 border-slate-800 hover:border-slate-700'
-                                    }`}
-                                >
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                                <Sparkles className="w-5 h-5" />
-                                            </div>
-                                            {formData.data_mode === 'sample' && (
-                                                <span className="px-2 py-0.5 rounded-full bg-blue-500 text-slate-950 font-extrabold text-[10px]">Terpilih</span>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-sm text-white">3. Import Data Sample</h3>
-                                            <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                                                Semua data minimal + sample Klien CRM, Produk IT, Proyek, Invoice, &amp; Karyawan untuk demonstrasi penuh.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="pt-3 border-t border-slate-800/80 text-[10px] text-emerald-400 font-mono">
-                                        Cocok untuk: Testing &amp; Demo
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between pt-4">
-                                <button
-                                    onClick={handlePrevStep}
-                                    className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center space-x-1.5 transition-all"
-                                >
-                                    <ArrowLeft className="w-4 h-4" />
-                                    <span>Kembali</span>
-                                </button>
-                                <button
-                                    onClick={handleNextStep}
-                                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center space-x-2 transition-all"
-                                >
-                                    <span>Lanjut ke Langkah 4: Konfirmasi</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* STEP 4: Review Summary & Execution */}
+                    {/* STEP 4: Verifikasi Berkas */}
                     {currentStep === 4 && (
-                        <div className="space-y-6 text-xs">
+                        <div className="space-y-6">
                             <div>
-                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                                    <ShieldCheck className="w-5 h-5 text-blue-400" />
-                                    <span>Langkah 4: Konfirmasi Ringkasan &amp; Eksekusi Instalasi</span>
-                                </h2>
-                                <p className="text-xs text-slate-400 mt-1">
-                                    Periksa kembali ringkasan konfigurasi sebelum memulai proses penginstalan.
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Verifikasi Berkas</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Unggah dokumen resmi untuk memverifikasi keaslian kepengurusan masjid Anda.
                                 </p>
                             </div>
 
-                            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Perusahaan</span>
-                                        <div className="text-sm font-bold text-white mt-0.5">{formData.company_name}</div>
-                                        <div className="text-[11px] text-slate-400">{formData.company_email}</div>
-                                    </div>
+                            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs space-y-1">
+                                <p className="font-bold">Ketentuan Berkas:</p>
+                                <p className="text-[11px]">SK Kepengurusan bersifat <strong>wajib</strong>, sedangkan Akta Wakaf / IMB / Surat Keterangan bersifat <strong>opsional</strong>. Format: PDF, JPG, PNG (maks. 5MB).</p>
+                            </div>
 
-                                    <div>
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Superadmin Login</span>
-                                        <div className="text-sm font-bold text-white mt-0.5">{formData.admin_name}</div>
-                                        <div className="text-[11px] text-slate-400">{formData.admin_email}</div>
-                                    </div>
-
-                                    <div>
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Zona Waktu &amp; Mata Uang</span>
-                                        <div className="text-xs font-mono text-slate-300 mt-0.5">{formData.timezone} ({formData.currency_symbol} - {formData.currency_code})</div>
-                                    </div>
-
-                                    <div>
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Mode Inisialisasi Data</span>
-                                        <div className="text-xs font-bold text-blue-400 mt-0.5 uppercase tracking-wide">
-                                            {formData.data_mode === 'empty' ? '1. Data Kosong' : formData.data_mode === 'minimal' ? '2. Data Minimal (Default)' : '3. Import Data Sample (Full Demo)'}
-                                        </div>
-                                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                                <div className="p-6 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 text-center space-y-3">
+                                    <Upload className="w-8 h-8 text-slate-400 mx-auto" />
+                                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Akta Wakaf / IMB / Surat Keterangan</div>
+                                    <input type="file" onChange={(e) => setWakafFile(e.target.files[0])} className="text-xs text-slate-500" />
                                 </div>
 
-                                <div className="pt-3 border-t border-slate-800">
-                                    <label className="flex items-center space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={agreed}
-                                            onChange={(e) => setAgreed(e.target.checked)}
-                                            className="rounded border-slate-700 text-blue-600 focus:ring-blue-500 w-4 h-4"
-                                        />
-                                        <span className="text-slate-300 font-medium">Saya mengonfirmasi data konfigurasi di atas sudah benar dan siap untuk diproses.</span>
-                                    </label>
+                                <div className="p-6 rounded-2xl border-2 border-dashed border-emerald-500/50 bg-emerald-500/5 text-center space-y-3">
+                                    <Upload className="w-8 h-8 text-emerald-600 mx-auto" />
+                                    <div className="text-xs font-bold text-slate-900 dark:text-white">SK Kepengurusan *</div>
+                                    <input type="file" onChange={(e) => setSkFile(e.target.files[0])} className="text-xs text-slate-500" />
                                 </div>
                             </div>
 
                             <div className="flex justify-between pt-4">
-                                <button
-                                    onClick={handlePrevStep}
-                                    disabled={submitting}
-                                    className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 font-bold text-xs flex items-center space-x-1.5 transition-all"
-                                >
-                                    <ArrowLeft className="w-4 h-4" />
-                                    <span>Kembali</span>
+                                <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
+                                    Kembali
                                 </button>
-                                <button
-                                    onClick={handleRunSetup}
-                                    disabled={!agreed || submitting}
-                                    className="px-8 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center space-x-2 transition-all"
+                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                    <span>Lanjutkan</span>
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 5: Syarat & Ketentuan */}
+                    {currentStep === 5 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Syarat & Ketentuan</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Baca dan setujui syarat ketentuan sebelum website Anda diaktifkan.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 text-xs text-slate-600 dark:text-slate-300 max-h-60 overflow-y-auto">
+                                <ol className="list-decimal list-inside space-y-2">
+                                    <li>Pendaftar adalah pengurus resmi masjid/mushollah.</li>
+                                    <li>Data yang diberikan adalah benar dan dapat dipertanggungjawabkan.</li>
+                                    <li>Website tidak boleh digunakan untuk kegiatan yang melanggar hukum atau bertentangan dengan nilai-nilai Islam.</li>
+                                    <li>Platform berhak menonaktifkan website jika ditemukan pelanggaran setelah verifikasi.</li>
+                                    <li>Pengurus masjid bertanggung jawab atas konten yang dipublikasikan.</li>
+                                </ol>
+                            </div>
+
+                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                <label className="flex items-center space-x-3 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                    <input
+                                        type="checkbox"
+                                        name="agreed_terms"
+                                        checked={formData.agreed_terms}
+                                        onChange={handleChange}
+                                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
+                                    />
+                                    <span>Saya menyetujui seluruh Syarat & Ketentuan yang berlaku di atas</span>
+                                </label>
+                            </div>
+
+                            <div className="flex justify-between pt-4">
+                                <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
+                                    Kembali
+                                </button>
+                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                    <span>Lanjutkan</span>
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 6: Pilih Paket */}
+                    {currentStep === 6 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pilih Paket Layanan</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Pilih paket langganan yang sesuai dengan kebutuhan masjid Anda.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                                <div 
+                                    onClick={() => setFormData({ ...formData, package_plan: 'free' })}
+                                    className={`p-6 rounded-2xl border cursor-pointer space-y-4 ${
+                                        formData.package_plan === 'free'
+                                            ? 'border-emerald-600 bg-emerald-500/5 ring-2 ring-emerald-500/20'
+                                            : 'border-slate-200 dark:border-slate-800'
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="font-bold text-base text-slate-900 dark:text-white">Paket Gratis</h3>
+                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600">SELAMANYA</span>
+                                    </div>
+                                    <div className="text-2xl font-black text-slate-900 dark:text-white">Rp 0</div>
+                                    <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-400">
+                                        <li>✓ Subdomain <code>masjidku.id/m/slug</code></li>
+                                        <li>✓ Donasi QRIS Direct</li>
+                                        <li>✓ Berita & Update Kajian</li>
+                                    </ul>
+                                </div>
+
+                                <div 
+                                    onClick={() => setFormData({ ...formData, package_plan: 'pro' })}
+                                    className={`p-6 rounded-2xl border cursor-pointer space-y-4 ${
+                                        formData.package_plan === 'pro'
+                                            ? 'border-emerald-600 bg-emerald-500/5 ring-2 ring-emerald-500/20'
+                                            : 'border-slate-200 dark:border-slate-800'
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="font-bold text-base text-slate-900 dark:text-white">Paket Professional</h3>
+                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-600">PRO</span>
+                                    </div>
+                                    <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">Rp 99.000 <span className="text-xs text-slate-400 font-normal">/bulan</span></div>
+                                    <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-400">
+                                        <li>✓ Support Custom Domain (<code>masjidalikhlas.com</code>)</li>
+                                        <li>✓ Seluruh Tema Premium</li>
+                                        <li>✓ Prioritas Verifikasi Fast-Track</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between pt-4">
+                                <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
+                                    Kembali
+                                </button>
+                                <button 
+                                    onClick={handleNextStep}
+                                    disabled={submitting}
+                                    className="px-8 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-lg flex items-center space-x-2"
                                 >
                                     {submitting ? (
                                         <>
                                             <RefreshCw className="w-4 h-4 animate-spin" />
-                                            <span>Memproses Instalasi &amp; Database...</span>
+                                            <span>Menyimpan Setup...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <RocketIcon className="w-4 h-4" />
-                                            <span>Mulai Instalasi Sekarang</span>
+                                            <span>Selesaikan Setup</span>
+                                            <ArrowRight className="w-4 h-4" />
                                         </>
                                     )}
                                 </button>
@@ -620,54 +624,46 @@ export default function SetupWizardPage() {
                         </div>
                     )}
 
-                    {/* STEP 5: Installation Complete Celebration */}
-                    {currentStep === 5 && (
-                        <div className="text-center py-8 space-y-6">
-                            <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-xl">
-                                <CheckCircle2 className="w-10 h-10" />
+                    {/* STEP 7: Selesai */}
+                    {currentStep === 7 && (
+                        <div className="text-center py-10 space-y-6">
+                            <div className="w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto shadow-xl">
+                                <ShieldCheck className="w-10 h-10" />
                             </div>
 
                             <div className="space-y-2 max-w-md mx-auto">
-                                <h2 className="text-2xl font-extrabold text-white">🎉 Instalasi Berhasil Diselesaikan!</h2>
-                                <p className="text-xs text-slate-400 leading-relaxed">
-                                    Basis data telah berhasil dikonfigurasi dan dikunci secara otomatis. Akun Superadmin Anda telah siap digunakan.
+                                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Setup Selesai — Menunggu Verifikasi Admin</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                    Data setup website masjid Anda telah berhasil disimpan dan saat ini dalam antrean verifikasi tim admin MasjidKu.
                                 </p>
                             </div>
 
-                            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 max-w-md mx-auto text-left text-xs space-y-2">
-                                <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                                    <span className="text-slate-400">Email Superadmin:</span>
-                                    <strong className="text-white font-mono">{formData.admin_email}</strong>
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-md mx-auto text-left text-xs space-y-2">
+                                <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                                    <span className="text-slate-500">Subdomain:</span>
+                                    <strong className="font-mono text-emerald-600 dark:text-emerald-400">{formData.masjid_slug}.masjidku.id</strong>
                                 </div>
                                 <div className="flex justify-between pt-1">
-                                    <span className="text-slate-400">Status Keamanan:</span>
-                                    <span className="text-emerald-400 font-bold flex items-center gap-1">
-                                        <Lock className="w-3.5 h-3.5" /> Wizard Locked
+                                    <span className="text-slate-500">Status Verifikasi:</span>
+                                    <span className="text-amber-500 font-bold flex items-center gap-1">
+                                        <AlertCircle className="w-3.5 h-3.5" /> Pending Approval
                                     </span>
                                 </div>
                             </div>
 
                             <div className="pt-4 max-w-xs mx-auto">
                                 <button
-                                    onClick={() => navigate('/login')}
-                                    className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xl shadow-blue-500/30 transition-all flex items-center justify-center space-x-2"
+                                    onClick={() => navigate('/')}
+                                    className="w-full py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-xl shadow-emerald-700/30 transition flex items-center justify-center space-x-2"
                                 >
-                                    <span>Masuk ke System (Login)</span>
+                                    <span>Masuk ke Dashboard Masjid</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
                     )}
                 </div>
-            </div>
+            </main>
         </div>
-    );
-}
-
-function RocketIcon(props) {
-    return (
-        <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m0 0a14.926 14.926 0 01-2.58-5.84m0 0A14.98 14.98 0 0115.59 2.59a14.98 14.98 0 01-12.12 6.16m5.96 5.96l-3.18 3.18" />
-        </svg>
     );
 }
