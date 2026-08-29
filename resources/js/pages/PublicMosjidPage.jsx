@@ -183,6 +183,33 @@ export default function PublicMosjidPage() {
 
     const currentStyle = themeStyles[themeSlug] || themeStyles['default-clean'];
 
+    // Helper to calculate next upcoming prayer
+    const getNextPrayerKey = (now, schedule) => {
+        if (!schedule) return 'subuh';
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+        const timeToMinutes = (tStr) => {
+            if (!tStr) return 0;
+            const [h, m] = tStr.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        const subuhM = timeToMinutes(schedule.subuh);
+        const dzuhurM = timeToMinutes(schedule.dzuhur);
+        const asharM = timeToMinutes(schedule.ashar);
+        const maghribM = timeToMinutes(schedule.maghrib);
+        const isyaM = timeToMinutes(schedule.isya);
+
+        if (nowMinutes < subuhM) return 'subuh';
+        if (nowMinutes < dzuhurM) return 'dzuhur';
+        if (nowMinutes < asharM) return 'ashar';
+        if (nowMinutes < maghribM) return 'maghrib';
+        if (nowMinutes < isyaM) return 'isya';
+        return 'subuh'; // After Isya, next is Subuh tomorrow
+    };
+
+    const nextPrayerKey = getNextPrayerKey(currentTime, prayerSchedule);
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-600 selection:text-white flex flex-col justify-between">
             <div>
@@ -311,24 +338,38 @@ export default function PublicMosjidPage() {
                                             </div>
 
                                             <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Subuh</div>
+                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'subuh' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                    <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'subuh' ? currentStyle.textAccent : 'text-slate-500'}`}>
+                                                        Subuh {nextPrayerKey === 'subuh' && '✦'}
+                                                    </div>
                                                     <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.subuh}</div>
                                                 </div>
-                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Dzuhur</div>
+
+                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'dzuhur' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                    <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'dzuhur' ? currentStyle.textAccent : 'text-slate-500'}`}>
+                                                        Dzuhur {nextPrayerKey === 'dzuhur' && '✦'}
+                                                    </div>
                                                     <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.dzuhur}</div>
                                                 </div>
-                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Ashar</div>
+
+                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'ashar' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                    <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'ashar' ? currentStyle.textAccent : 'text-slate-500'}`}>
+                                                        Ashar {nextPrayerKey === 'ashar' && '✦'}
+                                                    </div>
                                                     <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.ashar}</div>
                                                 </div>
-                                                <div className={`p-3 rounded-xl bg-slate-950 border ${currentStyle.borderAccent} shadow-lg shadow-emerald-500/10`}>
-                                                    <div className={`text-[10px] font-bold uppercase ${currentStyle.textAccent}`}>Maghrib</div>
+
+                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'maghrib' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                    <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'maghrib' ? currentStyle.textAccent : 'text-slate-500'}`}>
+                                                        Maghrib {nextPrayerKey === 'maghrib' && '✦'}
+                                                    </div>
                                                     <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.maghrib}</div>
                                                 </div>
-                                                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                                                    <div className="text-[10px] text-slate-500 font-bold uppercase">Isya</div>
+
+                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'isya' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                    <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'isya' ? currentStyle.textAccent : 'text-slate-500'}`}>
+                                                        Isya {nextPrayerKey === 'isya' && '✦'}
+                                                    </div>
                                                     <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.isya}</div>
                                                 </div>
                                             </div>
