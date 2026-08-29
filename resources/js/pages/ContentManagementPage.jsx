@@ -257,7 +257,7 @@ export default function ContentManagementPage({ defaultTab = 'beranda' }) {
                         {(activeTab === 'beranda' || activeTab === 'hero' || activeTab === 'header') && (
                             <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6 shadow-sm">
                                 <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3 border-slate-200 dark:border-slate-800">
-                                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                                    <Layout className="w-4 h-4 text-emerald-600" />
                                     <span>Pengaturan Content Halaman Beranda (Header Topbar, Banner &amp; Seksi)</span>
                                 </h2>
 

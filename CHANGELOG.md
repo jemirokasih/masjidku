@@ -6,6 +6,9 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
+- **Standarisasi Icon UI Clean (Menghapus Icon AI & Emoji)**:
+  - Menghapus icon khas AI (`Sparkles`) dan emoji dari label navigasi.
+  - Membatasi ikon hanya pada item kategori utama di sidebar (`MainLayout.jsx`), sementara sub-item dropdown menggunakan teks bersih (*text-only*) tanpa ikon sesuai standar enterprise.
 - **Refactoring Rute RESTful Kelola Konten (`/content/:tab`)**:
   - Mengubah struktur rute URL kelola konten dari query string `content?tab=beranda` menjadi rute URL RESTful berikatan bersih: `/content/beranda`, `/content/profil`, `/content/program`, `/content/berita`, `/content/sholat`, `/content/galeri`, `/content/footer`.
   - Menggunakan `useParams()` dari `react-router-dom` di `ContentManagementPage.jsx` untuk pengenalan tab instan.

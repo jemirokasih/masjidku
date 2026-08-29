@@ -169,13 +169,13 @@ export default function MainLayout() {
                     name: 'Kelola Konten',
                     icon: FileText,
                     children: [
-                        { name: 'Beranda', path: '/content/beranda', icon: Sparkles },
-                        { name: 'Profile Masjid', path: '/content/profil', icon: Building },
-                        { name: 'Program DKM', path: '/content/program', icon: HeartHandshake },
-                        { name: 'Berita & Kajian', path: '/content/berita', icon: BookOpenCheck },
-                        { name: 'Jadwal Sholat', path: '/content/sholat', icon: Clock },
-                        { name: 'Galeri Media', path: '/content/galeri', icon: Image },
-                        { name: 'Kontak & Footer', path: '/content/footer', icon: Share2 },
+                        { name: 'Beranda', path: '/content/beranda' },
+                        { name: 'Profile Masjid', path: '/content/profil' },
+                        { name: 'Program DKM', path: '/content/program' },
+                        { name: 'Berita & Kajian', path: '/content/berita' },
+                        { name: 'Jadwal Sholat', path: '/content/sholat' },
+                        { name: 'Galeri Media', path: '/content/galeri' },
+                        { name: 'Kontak & Footer', path: '/content/footer' },
                     ]
                 }
             ]
@@ -329,19 +329,17 @@ export default function MainLayout() {
                                                                 <div className="ml-4 pl-3 border-l-2 border-emerald-600/40 space-y-1 pt-1">
                                                                     {item.children.map(child => {
                                                                         const childActive = isActive(child.path);
-                                                                        const ChildIcon = child.icon;
                                                                         return (
                                                                             <Link
                                                                                 key={child.name}
                                                                                 to={child.path}
                                                                                 onClick={() => setSidebarOpen(false)}
-                                                                                className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                                                                                className={`block px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                                                                                     childActive
-                                                                                        ? 'bg-gradient-to-r from-[#164134] to-[#226350] text-white font-bold shadow'
+                                                                                        ? 'bg-emerald-800/90 text-white font-bold shadow-sm'
                                                                                         : 'text-emerald-100/70 hover:text-white hover:bg-emerald-800/40'
                                                                                 }`}
                                                                             >
-                                                                                <ChildIcon className={`w-3.5 h-3.5 shrink-0 ${childActive ? 'text-amber-300' : 'text-emerald-300/80'}`} />
                                                                                 <span className="truncate">{child.name}</span>
                                                                             </Link>
                                                                         );
