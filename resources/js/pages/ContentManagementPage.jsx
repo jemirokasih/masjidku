@@ -6,7 +6,7 @@ import {
     CheckCircle2, Save, Building, MapPin, Navigation, List, ChevronRight
 } from 'lucide-react';
 
-export default function ContentManagementPage() {
+export default function ContentManagementPage({ defaultTab = 'hero' }) {
     const [posts, setPosts] = useState([]);
     const [donations, setDonations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function ContentManagementPage() {
     const [message, setMessage] = useState('');
 
     // 9 CMS Tabs: header, hero, profil, program, kajian, sholat, berita, galeri, footer
-    const [activeTab, setActiveTab] = useState('header');
+    const [activeTab, setActiveTab] = useState(defaultTab);
 
     // General CMS Settings (saves to homepage_settings & masjid_infos)
     const [cmsSettings, setCmsSettings] = useState({
@@ -26,11 +26,15 @@ export default function ContentManagementPage() {
         nav_show_galeri: true,
         nav_show_kontak: true,
 
-        // 2. Hero/Banner
+        // 2. Hero/Banner & Seksi
         hero_title: '',
         hero_subtitle: '',
         hero_cta_text: 'Infaq / Donasi',
         hero_cta_link: '#donasi',
+        show_sholat: true,
+        show_about: true,
+        show_posts: true,
+        show_donations: true,
 
         // 3. Profil Masjid
         description: '',
@@ -372,6 +376,49 @@ export default function ContentManagementPage() {
                                         onChange={(e) => setCmsSettings({ ...cmsSettings, hero_cta_link: e.target.value })}
                                         className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border rounded-xl font-mono"
                                     />
+                                </div>
+                            </div>
+
+                            {/* Visibilitas Seksi Beranda */}
+                            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                                <label className="block font-bold text-slate-900 dark:text-white">Pengaturan Visibilitas Seksi Beranda</label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                        <span>Tampilkan Widget Jadwal Sholat</span>
+                                        <input
+                                            type="checkbox"
+                                            checked={cmsSettings.show_sholat}
+                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_sholat: e.target.checked })}
+                                            className="w-4 h-4 text-emerald-600 rounded"
+                                        />
+                                    </label>
+                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                        <span>Tampilkan Seksi Profil &amp; Sejarah</span>
+                                        <input
+                                            type="checkbox"
+                                            checked={cmsSettings.show_about}
+                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_about: e.target.checked })}
+                                            className="w-4 h-4 text-emerald-600 rounded"
+                                        />
+                                    </label>
+                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                        <span>Tampilkan Seksi Berita &amp; Kajian</span>
+                                        <input
+                                            type="checkbox"
+                                            checked={cmsSettings.show_posts}
+                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_posts: e.target.checked })}
+                                            className="w-4 h-4 text-emerald-600 rounded"
+                                        />
+                                    </label>
+                                    <label className="p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl border flex items-center justify-between cursor-pointer font-bold">
+                                        <span>Tampilkan Seksi Donasi QRIS</span>
+                                        <input
+                                            type="checkbox"
+                                            checked={cmsSettings.show_donations}
+                                            onChange={(e) => setCmsSettings({ ...cmsSettings, show_donations: e.target.checked })}
+                                            className="w-4 h-4 text-emerald-600 rounded"
+                                        />
+                                    </label>
                                 </div>
                             </div>
                         </div>

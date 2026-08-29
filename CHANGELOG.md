@@ -6,6 +6,9 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
+- **Unifikasi Pengaturan Hero Banner CMS**:
+  - Menyatukan 2 form pengaturan banner menjadi 1 pusat kendali tunggal di `ContentManagementPage.jsx` pada tab *2. Banner Utama (Hero Section)*.
+  - Form kini mencakup Judul Headline, Sub-judul, Teks CTA & Link Tujuan, serta saklar visibilitas seksi beranda (*Jadwal Sholat, Profil & Sejarah, Berita & Kajian, Donasi QRIS*).
 - **Sidebar Dropdown & Pengelompokan Menu CMS**:
   - Menggabungkan **Hero & Tema Tampilan (`/cms-pages`)** dan **Kelola Konten Website (`/content`)** ke dalam satu grup menu dropdown accordion **🎨 CMS & TAMPILAN WEBSITE** di sidebar admin (`MainLayout.jsx`).
   - Menghadirkan dukungan sub-menu bertingkat (*nested sub-items*) dengan panah chevron indikator status *open/close*.
