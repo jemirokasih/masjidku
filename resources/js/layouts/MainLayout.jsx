@@ -178,6 +178,7 @@ export default function MainLayout() {
     ];
 
     const isActive = (path) => {
+        if (!path) return false;
         if (path === '/') return location.pathname === '/';
         const [basePath, searchStr] = path.split('?');
         if (location.pathname !== basePath) return false;
