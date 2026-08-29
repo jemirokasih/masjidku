@@ -6,6 +6,9 @@ Semua perubahan penting pada proyek ini dicatat secara berkala dalam dokumen ini
 
 ## [v2.2.0] - 2026-08-30
 ### Added & Enhanced
+- **Sidebar Dropdown & Pengelompokan Menu CMS**:
+  - Menggabungkan **Hero & Tema Tampilan (`/cms-pages`)** dan **Kelola Konten Website (`/content`)** ke dalam satu grup menu dropdown accordion **🎨 CMS & TAMPILAN WEBSITE** di sidebar admin (`MainLayout.jsx`).
+  - Menghadirkan dukungan sub-menu bertingkat (*nested sub-items*) dengan panah chevron indikator status *open/close*.
 - **Dynamic Content Management (CMS) untuk Profil Masjid**:
   - Halaman **Kelola Konten CMS (`ContentManagementPage.jsx`)** pada tab *3. Profil Masjid* kini dilengkapi dengan form dinamis interaktif untuk menambah/menghapus/mengedit:
     - **Kartu Statistik Ringkas** (e.g. *Kapasitas Jamaah*, *Karpet Premium*, *Program Kajian/Bulan*, *Operasional & Layanan*).

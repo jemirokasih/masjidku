@@ -70,6 +70,15 @@ export default function MainLayout() {
 
     const userRole = (user?.role || 'staff').toLowerCase();
 
+    const [openSubMenus, setOpenSubMenus] = useState({});
+
+    const toggleSubMenu = (itemName) => {
+        setOpenSubMenus(prev => ({
+            ...prev,
+            [itemName]: !prev[itemName]
+        }));
+    };
+
     const toggleSidebarCollapse = () => {
         const next = !sidebarCollapsed;
         setSidebarCollapsed(next);
@@ -141,13 +150,29 @@ export default function MainLayout() {
         }
     ] : [
         {
-            groupName: 'CMS PENGURUS',
+            groupName: 'RINGKASAN & PROFIL',
             items: [
                 { name: 'Dashboard', path: '/', icon: LayoutDashboard },
                 { name: 'Profile Masjid', path: '/masjid-profile', icon: Building2 },
-                { name: 'Hero & Tampilan', path: '/cms-pages', icon: Layout },
-                { name: 'Kelola Konten', path: '/content', icon: FileText },
-                { name: 'Pengaturan', path: '/settings', icon: Settings },
+            ]
+        },
+        {
+            groupName: 'CMS & TAMPILAN WEBSITE',
+            items: [
+                {
+                    name: 'Kelola CMS & Tampilan',
+                    icon: Layout,
+                    children: [
+                        { name: 'Hero & Tema Tampilan', path: '/cms-pages', icon: Layers },
+                        { name: 'Kelola Konten Website', path: '/content', icon: FileText },
+                    ]
+                }
+            ]
+        },
+        {
+            groupName: 'SISTEM',
+            items: [
+                { name: 'Pengaturan Sistem', path: '/settings', icon: Settings },
             ]
         }
     ];
@@ -261,6 +286,64 @@ export default function MainLayout() {
                                     {(!isGroupCollapsed || sidebarCollapsed) && (
                                         <div className="space-y-1">
                                             {visibleItems.map((item) => {
+                                                if (item.children) {
+                                                    const hasActiveChild = item.children.some(child => isActive(child.path));
+                                                    const isSubOpen = openSubMenus[item.name] ?? hasActiveChild;
+                                                    const ItemIcon = item.icon;
+
+                                                    return (
+                                                        <div key={item.name} className="space-y-1">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => toggleSubMenu(item.name)}
+                                                                title={sidebarCollapsed ? item.name : undefined}
+                                                                className={`w-full flex items-center rounded-xl text-xs font-semibold transition-all ${
+                                                                    sidebarCollapsed ? 'justify-center p-2.5' : 'justify-between px-3 py-2'
+                                                                } ${
+                                                                    hasActiveChild
+                                                                        ? 'bg-emerald-800/80 text-white shadow-sm'
+                                                                        : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/50'
+                                                                }`}
+                                                            >
+                                                                <div className={`flex items-center ${sidebarCollapsed ? '' : 'space-x-2.5'}`}>
+                                                                    <ItemIcon className="w-4 h-4 text-emerald-300 shrink-0" />
+                                                                    {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+                                                                </div>
+                                                                {!sidebarCollapsed && (
+                                                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                                                                        isSubOpen ? 'rotate-180 text-emerald-200' : 'rotate-0 text-emerald-400'
+                                                                    }`} />
+                                                                )}
+                                                            </button>
+
+                                                            {/* Sub-menu Dropdown items */}
+                                                            {(!sidebarCollapsed && isSubOpen) && (
+                                                                <div className="ml-4 pl-3 border-l-2 border-emerald-600/40 space-y-1 pt-1">
+                                                                    {item.children.map(child => {
+                                                                        const childActive = isActive(child.path);
+                                                                        const ChildIcon = child.icon;
+                                                                        return (
+                                                                            <Link
+                                                                                key={child.name}
+                                                                                to={child.path}
+                                                                                onClick={() => setSidebarOpen(false)}
+                                                                                className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                                                                                    childActive
+                                                                                        ? 'bg-gradient-to-r from-[#164134] to-[#226350] text-white font-bold shadow'
+                                                                                        : 'text-emerald-100/70 hover:text-white hover:bg-emerald-800/40'
+                                                                                }`}
+                                                                            >
+                                                                                <ChildIcon className={`w-3.5 h-3.5 shrink-0 ${childActive ? 'text-amber-300' : 'text-emerald-300/80'}`} />
+                                                                                <span className="truncate">{child.name}</span>
+                                                                            </Link>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                }
+
                                                 const active = isActive(item.path);
                                                 const Icon = item.icon;
                                                 return (
@@ -273,15 +356,15 @@ export default function MainLayout() {
                                                             sidebarCollapsed ? 'justify-center p-2.5' : 'justify-between px-3 py-2'
                                                         } ${
                                                             active
-                                                                ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/20'
-                                                                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                                                                ? 'bg-gradient-to-r from-[#164134] to-[#226350] text-white font-bold shadow'
+                                                                : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/50'
                                                         }`}
                                                     >
                                                         <div className={`flex items-center ${sidebarCollapsed ? '' : 'space-x-2.5'}`}>
-                                                            <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} />
+                                                            <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-emerald-300/80'}`} />
                                                             {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
                                                         </div>
-                                                        {!sidebarCollapsed && active && <span className="w-1.5 h-1.5 rounded-full bg-white"></span>}
+                                                        {!sidebarCollapsed && active && <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>}
                                                     </Link>
                                                 );
                                             })}
