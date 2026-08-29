@@ -277,7 +277,8 @@ export default function PublicMosjidPage() {
 
                 {/* PAGE 1: BERANDA (HOME PAGE) */}
                 {activeSubPage === 'beranda' && (
-                    <div>
+                    <div className="space-y-16 pb-16">
+                        {/* SECTION 1: HERO BANNER */}
                         <section className="relative py-20 overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800/80">
                             <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] ${currentStyle.bgGlow} rounded-full blur-3xl pointer-events-none`}></div>
 
@@ -295,9 +296,9 @@ export default function PublicMosjidPage() {
                                     {heroSubtitle}
                                 </p>
 
-                                {/* Sholat Schedule Widget */}
+                                {/* SECTION 2: JADWAL SHOLAT WIDGET */}
                                 {showSholat && (
-                                    <div className="pt-8 max-w-3xl mx-auto">
+                                    <div className="pt-6 max-w-3xl mx-auto">
                                         <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
                                             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-b border-slate-800 pb-2.5">
                                                 <div className="flex items-center space-x-1.5 font-bold text-slate-300">
@@ -337,46 +338,128 @@ export default function PublicMosjidPage() {
                             </div>
                         </section>
 
-                        {/* Quick Highlights Section */}
-                        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-800 text-emerald-400 flex items-center justify-center font-bold">
-                                        🕌
+                        {/* SECTION 3: PROFIL SECTION */}
+                        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
+                                <div className="space-y-4 max-w-2xl">
+                                    <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold ${currentStyle.badge}`}>
+                                        <span>🕌 Profil Masjid</span>
                                     </div>
-                                    <h3 className="font-bold text-base text-white">Profil & Sejarah</h3>
-                                    <p className="text-xs text-slate-400 leading-relaxed">
-                                        Mengenal lebih dekat struktur kepengurusan DKM, visi-misi, serta fasilitas ibadah.
+                                    <h3 className="text-2xl sm:text-3xl font-black text-white">
+                                        Mengenal {masjid.name}
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                        {info.description || `Portal informasi resmi kegiatan ibadah, sejarah, visi misi, serta sarana prasarana ${masjid.name}.`}
                                     </p>
-                                    <Link to={`/m/${slug}/profil`} className={`inline-flex items-center text-xs font-bold pt-2 ${currentStyle.textAccent}`}>
-                                        Selengkapnya →
+                                </div>
+                                <Link
+                                    to={`/m/${slug}/profile`}
+                                    className={`px-6 py-3 rounded-2xl font-bold text-xs shadow-lg flex items-center space-x-2 shrink-0 ${currentStyle.button}`}
+                                >
+                                    <span>Halaman Profil Lengkap</span>
+                                    <ChevronRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+                        </section>
+
+                        {/* SECTION 4: PROGRAM & DONASI SECTION */}
+                        {showDonations && (
+                            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 space-y-6">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                                        <div>
+                                            <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Infaq &amp; Shadaqah</span>
+                                            <h3 className="text-2xl font-black text-white">Program Donasi Masjid</h3>
+                                        </div>
+                                        <Link
+                                            to={`/m/${slug}/donasi`}
+                                            className={`px-5 py-2.5 rounded-xl font-bold text-xs shadow-md inline-flex items-center space-x-2 ${currentStyle.button}`}
+                                        >
+                                            <span>Ke Halaman Program Donasi</span>
+                                            <ChevronRight className="w-4 h-4" />
+                                        </Link>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                                            <div className="text-xs font-bold text-slate-400">Rekening Bank Syariah Indonesia (BSI)</div>
+                                            <div className={`text-2xl font-black font-mono ${currentStyle.textAccent}`}>7700-1234-5678</div>
+                                            <div className="text-xs text-slate-400">a.n DKM {masjid.name}</div>
+                                        </div>
+
+                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                                            <div className="text-xs font-bold text-slate-400">Scan QRIS Direct Infaq</div>
+                                            <div className="text-xs text-slate-300 leading-relaxed">
+                                                Menerima donasi via GoPay, OVO, Dana, ShopeePay, &amp; Mobile Banking tanpa biaya transaksi.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* SECTION 5: BERITA & KAJIAN SECTION */}
+                        {showPosts && (
+                            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Dakwah &amp; Agenda</span>
+                                        <h3 className="text-2xl font-black text-white">Berita &amp; Kajian Terbaru</h3>
+                                    </div>
+                                    <Link
+                                        to={`/m/${slug}/berita`}
+                                        className={`text-xs font-bold inline-flex items-center space-x-1 ${currentStyle.textAccent} hover:underline`}
+                                    >
+                                        <span>Lihat Semua Berita</span>
+                                        <ChevronRight className="w-4 h-4" />
                                     </Link>
                                 </div>
 
-                                <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-800 text-blue-400 flex items-center justify-center font-bold">
-                                        📖
-                                    </div>
-                                    <h3 className="font-bold text-base text-white">Berita & Kajian</h3>
-                                    <p className="text-xs text-slate-400 leading-relaxed">
-                                        Jadwal ceramah rutin, tabligh akbar, serta berita pengumuman kegiatan jamaah.
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {recent_posts && recent_posts.length > 0 ? (
+                                        recent_posts.map((post) => (
+                                            <div key={post.id} className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">
+                                                    {post.category || 'Kajian'}
+                                                </span>
+                                                <h4 className="font-bold text-base text-white leading-snug">{post.title}</h4>
+                                                <p className="text-xs text-slate-400 line-clamp-2">{post.content}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-3 p-8 rounded-3xl bg-slate-900 border border-slate-800 text-center text-xs text-slate-400">
+                                            Belum ada jadwal kajian atau berita terbaru yang dipublikasikan.
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* SECTION 6: LOKASI & KONTAK SECTION */}
+                        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 text-center">
+                                <div className="space-y-2 max-w-xl mx-auto">
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Lokasi &amp; Kontak</span>
+                                    <h3 className="text-2xl font-black text-white">Kunjungi &amp; Hubungi Kami</h3>
+                                    <p className="text-xs text-slate-400">
+                                        {masjid.address ? `${masjid.address}, ${masjid.city || ''}, ${masjid.province || ''}` : 'Alamat masjid belum diatur.'}
                                     </p>
-                                    <Link to={`/m/${slug}/kajian`} className={`inline-flex items-center text-xs font-bold pt-2 ${currentStyle.textAccent}`}>
-                                        Lihat Jadwal →
-                                    </Link>
                                 </div>
 
-                                <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-800 text-amber-400 flex items-center justify-center font-bold">
-                                        💳
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-xs">
+                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                                        <div className="text-slate-500 font-bold mb-1">Telepon / WA</div>
+                                        <div className="font-mono font-bold text-white">{masjid.phone || masjid.user?.phone || '-'}</div>
                                     </div>
-                                    <h3 className="font-bold text-base text-white">Infaq & Donasi QRIS</h3>
-                                    <p className="text-xs text-slate-400 leading-relaxed">
-                                        Salurkan donasi & infaq jariyah secara aman langsung via QRIS Direct atau Rekening BSI.
-                                    </p>
-                                    <Link to={`/m/${slug}/donasi`} className={`inline-flex items-center text-xs font-bold pt-2 ${currentStyle.textAccent}`}>
-                                        Donasi Sekarang →
-                                    </Link>
+                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                                        <div className="text-slate-500 font-bold mb-1">Email Official</div>
+                                        <div className="font-mono font-bold text-white">{masjid.email || masjid.user?.email || '-'}</div>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center">
+                                        <Link to={`/m/${slug}/kontak`} className={`font-bold ${currentStyle.textAccent} hover:underline`}>
+                                            Detail Kontak &amp; Peta →
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </section>
