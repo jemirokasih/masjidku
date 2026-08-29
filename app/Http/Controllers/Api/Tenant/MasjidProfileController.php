@@ -74,6 +74,14 @@ class MasjidProfileController extends Controller
 
         $masjid->update($validated);
 
+        if (isset($validated['name']) && $masjid->info) {
+            if (!$masjid->info->description || str_contains($masjid->info->description, 'Selamat datang di official website')) {
+                $masjid->info->update([
+                    'description' => 'Selamat datang di official website ' . $masjid->name,
+                ]);
+            }
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Profil masjid berhasil diperbarui.',

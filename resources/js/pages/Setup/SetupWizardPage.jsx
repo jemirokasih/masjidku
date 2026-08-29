@@ -130,11 +130,9 @@ export default function SetupWizardPage() {
             await api.post('/tenant/masjid', data);
 
             // Save detailed info
-            if (formData.description) {
-                await api.post('/tenant/masjid/info', {
-                    description: formData.description,
-                });
-            }
+            await api.post('/tenant/masjid/info', {
+                description: formData.description || `Selamat datang di official website ${formData.masjid_name || 'Masjid'}`,
+            });
 
             // Save selected theme
             if (formData.active_theme_id) {
