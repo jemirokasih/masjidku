@@ -17,6 +17,8 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminMosqueVerificationPage from './pages/Admin/AdminMosqueVerificationPage';
 import PublicMosjidPage from './pages/PublicMosjidPage';
 import PublicMosqueTVPage from './pages/PublicMosqueTVPage';
+import QuranPage from './pages/QuranPage';
+import DoaPage from './pages/DoaPage';
 import MasjidProfilePage from './pages/MasjidProfilePage';
 import CMSPageManager from './pages/CMSPageManager';
 import ContentManagementPage from './pages/ContentManagementPage';
@@ -224,10 +226,14 @@ export default function App() {
                                     }
                                 />
 
-                        {/* Public Setup Wizard & Display TV Routes */}
+                        {/* Public Setup Wizard, Display TV & EQuran Routes */}
                         <Route path="/setup" element={<SetupWizardPage />} />
                         <Route path="/m/:slug/tv" element={<PublicMosqueTVPage />} />
                         <Route path="/tv" element={<PublicMosqueTVPage />} />
+                        <Route path="/quran" element={<QuranPage />} />
+                        <Route path="/m/:slug/quran" element={<QuranPage />} />
+                        <Route path="/doa" element={<DoaPage />} />
+                        <Route path="/m/:slug/doa" element={<DoaPage />} />
                         <Route path="/m/:slug/*" element={<PublicMosjidPage />} />
                         <Route path="/portal/invoice/:token" element={<InvoicePortal />} />
                         <Route path="/portal/invoice/:number" element={<InvoicePortal />} />

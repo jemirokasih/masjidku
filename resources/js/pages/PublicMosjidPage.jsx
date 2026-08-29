@@ -178,6 +178,18 @@ export default function PublicMosjidPage() {
                                 </Link>
                             )}
                             <Link 
+                                to={`/m/${slug}/quran`} 
+                                className={`py-5 transition ${activeSubPage === 'quran' ? currentStyle.navActive : 'hover:text-white'}`}
+                            >
+                                Al-Qur'an
+                            </Link>
+                            <Link 
+                                to={`/m/${slug}/doa`} 
+                                className={`py-5 transition ${activeSubPage === 'doa' ? currentStyle.navActive : 'hover:text-white'}`}
+                            >
+                                Doa Harian
+                            </Link>
+                            <Link 
                                 to={`/m/${slug}/kontak`} 
                                 className={`py-5 transition ${activeSubPage === 'kontak' ? currentStyle.navActive : 'hover:text-white'}`}
                             >
