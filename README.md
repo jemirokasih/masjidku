@@ -1,119 +1,70 @@
-# Mikrotek Themes Build
+# Masjidku - Platform SaaS Website Masjid / Musholla
 
-A starter theme/template for the Mikrotek Business Suite Neo. It includes a Laravel 12 backend, Vite‑powered frontend, Docker support, and a set of ready‑to‑use Blade layouts, resources, and API endpoints.
-
----
-
-## 📦 Prerequisites
-
-- **macOS** (you are on a Mac)
-- **Homebrew** – for installing PHP, Composer, Node, etc.
-- **PHP 8.2+** – the project requires PHP ≥ 8.2 (the repo is already set up with a private GitHub repo). Verify with:
-  ```bash
-  php -v
-  ```
-- **Composer** – dependency manager for PHP.
-- **Node 20+** and **npm** – for frontend assets.
-- **Docker** (optional) – if you prefer containerised development.
+**Masjidku** adalah platform SaaS (Software as a Service) multi-tenant berbasis Laravel RESTful API yang dirancang untuk membantu pengurus masjid dan musholah memiliki serta mengelola website resmi secara mudah.
 
 ---
 
-## 🛠️ Local Development
+## 🌟 Fitur Utama
 
-### 1. Clone the repo
-```bash
-git clone git@github.com:jemirokasih/mikrotek-themes-build.git
-cd mikrotek-themes-build
-```
+- **Multi-Tenant & Domain**:
+  - Pendaftaran gratis dengan subdomain (`alikhlas.masjidku.com`) atau path (`masjidku.com/m/alikhlas`).
+  - Siap untuk integrasi custom domain berbayar (`custom_domain`).
+- **Workflow Verifikasi Admin**:
+  - Pendaftaran pengurus masuk antrean `pending` verifikasi.
+  - Super Admin Masjidku meninjau dan melakukan Approve/Reject sebelum website dipublikasikan.
+- **Marketplace Tema Website**:
+  - Katalog template website masjid (Gratis & Berbayar).
+  - Pengurus masjid bebas memilih & mengganti tema website aktif.
+- **Manajemen Konten (Decoupled RESTful API)**:
+  - Profil masjid, lokasi koordinat (GPS), visi & misi, fasilitas, sosial media.
+  - Berita, Update Kajian (Pemateri/Ustadz, jadwal), & Agenda masjid.
+  - Program Infaq & Donasi (Target, rekening bank, & QRIS).
+- **Decoupled Architecture**:
+  - Backend Laravel RESTful API dengan Sanctum Authentication.
+  - Responsif & siap dikonsumsi oleh frontend terpisah (React / Vue / Mobile App).
 
-### 2. Install PHP dependencies
-```bash
-composer install   # includes dev‑dependencies (PHPUnit, etc.)
-```
+---
 
-### 3. Install Node dependencies
+## 🚀 Panduan Pengembangan (Local Setup)
+
+### 1. Prerequisites
+- **PHP >= 8.2**
+- **Composer**
+- **Node.js & npm**
+- **SQLite / MySQL**
+
+### 2. Install Dependencies
 ```bash
+composer install
 npm install
 ```
 
-### 4. Build assets (development mode)
+### 3. Konfigurasi Environment & Database
 ```bash
-npm run dev   # hot‑reload server – Vite watches your files
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate:fresh --seed
 ```
 
-### 5. Run the Laravel development server
+### 4. Jalankan Server Lokal
 ```bash
 php artisan serve
 ```
-Visit `http://127.0.0.1:8000` in your browser.
+API endpoint siap diakses di `http://127.0.0.1:8000/api/v1/`.
 
----
-
-## 📦 Docker workflow (recommended)
-
-The repository contains a `Dockerfile` and `docker‑compose.yml` for a fully containerised environment.
-
-```bash
-# Build and start the containers
-docker compose up -d --build
-```
-
-The app will be reachable at `http://localhost:9000` (the `app` service exposes port 9000). The health‑check endpoint can be used to verify the container is ready:
-
-```bash
-curl http://localhost:9000/health
-# => {"status":"ok"}
-```
-
-To stop the containers:
-```bash
-docker compose down
-```
-
----
-
-## ✅ Running Tests
-
-The project uses **PHPUnit** (installed via Composer). After installing dependencies, run:
+### 5. Jalankan Automated Tests
 ```bash
 php artisan test
 ```
-All feature and unit tests should pass.
 
 ---
 
-## 📚 Project Structure Highlights
+## 📚 Endpoint API Utama
 
-- **`app/Http/Resources`** – base API resources (`BaseResource`, `PaginatedCollection`).
-- **`resources/views/layouts/app.blade.php`** – base Blade layout with Tailwind & Vite integration.
-- **`routes/web.php`** – includes a simple `/health` JSON endpoint.
-- **`docker-compose.yml` & `Dockerfile`** – ready‑to‑use Docker environment (PHP 8.5‑fpm base, Composer, Node).
-- **`openapi.yaml`** – placeholder for future OpenAPI spec.
+- **Auth**: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
+- **Platform Admin**: `GET /api/v1/admin/masjids`, `POST /api/v1/admin/masjids/{id}/verify`, `CRUD /api/v1/admin/themes`
+- **Mosque Admin**: `GET/PUT /api/v1/tenant/masjid`, `CRUD /api/v1/tenant/posts`, `CRUD /api/v1/tenant/donations`, `POST /api/v1/tenant/themes/select`
+- **Public Website**: `GET /api/v1/public/masjid/{identifier}`, `GET /api/v1/public/masjid/{identifier}/posts`, `GET /api/v1/public/masjid/{identifier}/donations`
 
----
-
-## 🎯 Quick Start Cheat Sheet
-
-```bash
-# Clone
-git clone git@github.com:jemirokasih/mikrotek-themes-build.git && cd mikrotek-themes-build
-
-# Install deps
-composer install && npm install
-
-# Development (hot‑reload)
-npm run dev & php artisan serve
-
-# Or Docker
-docker compose up -d --build
-```
-
----
-
-## 📜 License
-
-This project is intended as a **template** for internal use. Adjust the license as needed for your organisation.
-
----
-
-*Created and maintained by the Mikrotek team.*
+Spesifikasi lengkap OpenAPI ada di [openapi.yaml](openapi.yaml).
