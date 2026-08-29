@@ -17,9 +17,11 @@ export default function PublicMosjidPage() {
     const [error, setError] = useState('');
 
     // Determine current sub-page based on pathname
-    // pathname: /m/alikhlas or /m/alikhlas/profil or /m/alikhlas/kajian etc.
-    const currentPath = location.pathname.replace(new RegExp(`^/m/${slug}`), '').replace(/^\//, '');
-    const activeSubPage = currentPath || 'beranda'; // 'beranda', 'profil', 'kajian', 'donasi', 'kontak'
+    // pathname: /m/alikhlas/beranda or /m/alikhlas/profile or /m/alikhlas/berita etc.
+    const rawPath = location.pathname.replace(new RegExp(`^/m/${slug}`), '').replace(/^\//, '').toLowerCase();
+    let activeSubPage = rawPath || 'beranda';
+    if (activeSubPage === 'profile' || activeSubPage === 'profil') activeSubPage = 'profil';
+    if (activeSubPage === 'berita' || activeSubPage === 'kajian') activeSubPage = 'kajian';
 
     useEffect(() => {
         const fetchWebsiteData = async () => {
@@ -138,7 +140,7 @@ export default function PublicMosjidPage() {
                 {/* Navbar Multi-Page Navigation */}
                 <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                        <Link to={`/m/${slug}`} className="flex items-center space-x-3">
+                        <Link to={`/m/${slug}/beranda`} className="flex items-center space-x-3">
                             <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-500/20 font-black">
                                 🕌
                             </div>
@@ -152,20 +154,20 @@ export default function PublicMosjidPage() {
 
                         <nav className="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-300">
                             <Link 
-                                to={`/m/${slug}`} 
+                                to={`/m/${slug}/beranda`} 
                                 className={`py-5 transition ${activeSubPage === 'beranda' ? currentStyle.navActive : 'hover:text-white'}`}
                             >
                                 Beranda
                             </Link>
                             <Link 
-                                to={`/m/${slug}/profil`} 
+                                to={`/m/${slug}/profile`} 
                                 className={`py-5 transition ${activeSubPage === 'profil' ? currentStyle.navActive : 'hover:text-white'}`}
                             >
                                 Profil Masjid
                             </Link>
                             {showPosts && (
                                 <Link 
-                                    to={`/m/${slug}/kajian`} 
+                                    to={`/m/${slug}/berita`} 
                                     className={`py-5 transition ${activeSubPage === 'kajian' ? currentStyle.navActive : 'hover:text-white'}`}
                                 >
                                     Berita & Kajian
