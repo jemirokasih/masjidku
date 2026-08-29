@@ -6,7 +6,8 @@ import DoaPage from './DoaPage';
 import { 
     Globe, HeartHandshake, BookOpenCheck, Calendar, Clock, 
     MapPin, Phone, Mail, ShieldAlert, ArrowLeft, RefreshCw, 
-    CreditCard, ExternalLink, CheckCircle2, Sparkles, Building, Info, MessageSquare, ChevronRight
+    CreditCard, ExternalLink, CheckCircle2, Sparkles, Building, Info, MessageSquare, ChevronRight,
+    Sun, Moon
 } from 'lucide-react';
 
 export default function PublicMosjidPage() {
@@ -15,6 +16,7 @@ export default function PublicMosjidPage() {
     const [payload, setPayload] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isDarkMode, setIsDarkMode] = useState(false); // Default Light Mode!
 
     // Realtime Clock & Prayer Schedule State
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -211,7 +213,7 @@ export default function PublicMosjidPage() {
     const nextPrayerKey = getNextPrayerKey(currentTime, prayerSchedule);
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-600 selection:text-white flex flex-col justify-between">
+        <div className={`min-h-screen font-sans selection:bg-emerald-600 selection:text-white flex flex-col justify-between transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
             <div>
                 {/* Top Preview Status Bar (If pending verification) */}
                 {is_preview && (
@@ -227,37 +229,37 @@ export default function PublicMosjidPage() {
                 )}
 
                 {/* Navbar Multi-Page Navigation */}
-                <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+                <header className={`sticky top-0 z-40 backdrop-blur-md border-b transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200 shadow-sm'}`}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                         <Link to={`/m/${slug}/beranda`} className="flex items-center space-x-3">
                             <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-500/20 font-black">
                                 🕌
                             </div>
                             <div>
-                                <h1 className="font-black text-base text-white leading-none tracking-tight">{masjid.name}</h1>
+                                <h1 className={`font-black text-base leading-none tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{masjid.name}</h1>
                                 <span className={`text-[10px] font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>
                                     {masjid.city ? `${masjid.city}, ${masjid.province || ''}` : 'Official Website Masjid'}
                                 </span>
                             </div>
                         </Link>
 
-                        <nav className="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-300">
+                        <nav className={`hidden md:flex items-center space-x-6 text-xs font-semibold ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                             <Link 
                                 to={`/m/${slug}/beranda`} 
-                                className={`py-5 transition ${activeSubPage === 'beranda' ? currentStyle.navActive : 'hover:text-white'}`}
+                                className={`py-5 transition ${activeSubPage === 'beranda' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                             >
                                 Beranda
                             </Link>
                             <Link 
                                 to={`/m/${slug}/profile`} 
-                                className={`py-5 transition ${activeSubPage === 'profil' ? currentStyle.navActive : 'hover:text-white'}`}
+                                className={`py-5 transition ${activeSubPage === 'profil' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                             >
                                 Profil Masjid
                             </Link>
                             {showPosts && (
                                 <Link 
                                     to={`/m/${slug}/berita`} 
-                                    className={`py-5 transition ${activeSubPage === 'kajian' ? currentStyle.navActive : 'hover:text-white'}`}
+                                    className={`py-5 transition ${activeSubPage === 'kajian' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                                 >
                                     Berita & Kajian
                                 </Link>
@@ -265,32 +267,42 @@ export default function PublicMosjidPage() {
                             {showDonations && (
                                 <Link 
                                     to={`/m/${slug}/donasi`} 
-                                    className={`py-5 transition ${activeSubPage === 'donasi' ? currentStyle.navActive : 'hover:text-white'}`}
+                                    className={`py-5 transition ${activeSubPage === 'donasi' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                                 >
                                     Donasi QRIS
                                 </Link>
                             )}
                             <Link 
                                 to={`/m/${slug}/quran`} 
-                                className={`py-5 transition ${activeSubPage === 'quran' ? currentStyle.navActive : 'hover:text-white'}`}
+                                className={`py-5 transition ${activeSubPage === 'quran' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                             >
                                 Al-Qur'an
                             </Link>
                             <Link 
                                 to={`/m/${slug}/doa`} 
-                                className={`py-5 transition ${activeSubPage === 'doa' ? currentStyle.navActive : 'hover:text-white'}`}
+                                className={`py-5 transition ${activeSubPage === 'doa' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                             >
                                 Doa Harian
                             </Link>
                             <Link 
                                 to={`/m/${slug}/kontak`} 
-                                className={`py-5 transition ${activeSubPage === 'kontak' ? currentStyle.navActive : 'hover:text-white'}`}
+                                className={`py-5 transition ${activeSubPage === 'kontak' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
                             >
                                 Lokasi & Kontak
                             </Link>
                         </nav>
 
                         <div className="flex items-center space-x-3">
+                            {/* Dark Mode / Light Mode Toggle Button */}
+                            <button
+                                onClick={() => setIsDarkMode(!isDarkMode)}
+                                className={`p-2 rounded-xl border text-xs font-bold flex items-center space-x-1.5 transition ${isDarkMode ? 'bg-slate-800 border-slate-700 text-amber-400 hover:bg-slate-700' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'}`}
+                                title={isDarkMode ? 'Beralih ke Mode Terang (Light)' : 'Beralih ke Mode Gelap (Dark)'}
+                            >
+                                {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+                                <span className="hidden sm:inline">{isDarkMode ? 'Light' : 'Dark'}</span>
+                            </button>
+
                             <Link
                                 to={`/m/${slug}/donasi`}
                                 className={`px-4 py-2 rounded-xl font-bold text-xs shadow-md flex items-center space-x-1.5 transition ${currentStyle.button}`}
@@ -306,14 +318,14 @@ export default function PublicMosjidPage() {
                 {activeSubPage === 'beranda' && (
                     <div className="space-y-16 pb-16">
                         {/* SECTION 1: HERO BANNER (ISLAMIC ARTWORK & GEOMETRY PATTERN) */}
-                        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80">
+                        <section className={`relative py-24 overflow-hidden border-b transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-slate-800/80' : 'bg-gradient-to-b from-emerald-50/70 via-white to-slate-50 border-slate-200/80'}`}>
                             {/* Islamic Background Radial Glow & Geometry Pattern */}
                             <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] ${currentStyle.bgGlow} rounded-full blur-[120px] pointer-events-none`}></div>
-                            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+                            <div className={`absolute inset-0 opacity-[0.04] ${isDarkMode ? 'bg-[radial-gradient(#34d399_1px,transparent_1px)]' : 'bg-[radial-gradient(#059669_1px,transparent_1px)]'} [background-size:24px_24px] pointer-events-none`}></div>
 
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
                                 {/* Calligraphy Bismillah Header */}
-                                <div className="text-emerald-400 font-serif text-2xl sm:text-4xl tracking-widest pt-2 pb-1 drop-shadow-lg select-none">
+                                <div className={`font-serif text-2xl sm:text-4xl tracking-widest pt-2 pb-1 drop-shadow-md select-none ${isDarkMode ? 'text-emerald-400' : 'text-emerald-800 font-bold'}`}>
                                     بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                                 </div>
 
@@ -322,17 +334,17 @@ export default function PublicMosjidPage() {
                                     <span>Official Website Resmi {masjid.name}</span>
                                 </div>
 
-                                <h2 className="text-3xl sm:text-5xl font-black text-white max-w-3xl mx-auto leading-tight tracking-tight">
+                                <h2 className={`text-3xl sm:text-5xl font-black max-w-3xl mx-auto leading-tight tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                                     {heroTitle}
                                 </h2>
 
-                                <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                                <p className={`text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                                     {heroSubtitle}
                                 </p>
 
                                 {/* Ayat Scroll Ticker */}
                                 <div className="pt-2">
-                                    <div className="inline-block px-5 py-2 rounded-2xl bg-slate-900/80 border border-amber-500/30 text-amber-300 text-xs font-serif italic shadow-inner">
+                                    <div className={`inline-block px-5 py-2 rounded-2xl text-xs font-serif italic shadow-sm border ${isDarkMode ? 'bg-slate-900/80 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-300/80 text-amber-900 font-bold'}`}>
                                         "Hanyalah yang memakmurkan masjid Allah ialah orang yang beriman kepada Allah &amp; Hari Kemudian" — (QS. At-Taubah: 18)
                                     </div>
                                 </div>
@@ -340,53 +352,53 @@ export default function PublicMosjidPage() {
                                 {/* SECTION 2: JADWAL SHOLAT WIDGET */}
                                 {showSholat && (
                                     <div className="pt-6 max-w-3xl mx-auto">
-                                        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4 backdrop-blur-md relative overflow-hidden">
+                                        <div className={`border rounded-3xl p-6 shadow-2xl space-y-4 backdrop-blur-md relative overflow-hidden transition-colors ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200/80 shadow-xl'}`}>
                                             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"></div>
                                             
-                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-b border-slate-800/80 pb-3">
-                                                <div className="flex items-center space-x-2 font-bold text-slate-300">
-                                                    <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-serif text-sm">🕌</div>
-                                                    <span>Jadwal Sholat Realtime — <strong className="text-white uppercase tracking-wider">{prayerSchedule.lokasi}</strong></span>
+                                            <div className={`flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-b pb-3 ${isDarkMode ? 'border-slate-800/80 text-slate-300' : 'border-slate-100 text-slate-700'}`}>
+                                                <div className="flex items-center space-x-2 font-bold">
+                                                    <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-serif text-sm">🕌</div>
+                                                    <span>Jadwal Sholat Realtime — <strong className={`uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prayerSchedule.lokasi}</strong></span>
                                                 </div>
-                                                <div className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-950 border border-slate-800 text-emerald-400 shadow">
-                                                    ⏰ Jam Saat Ini: <span className="text-white font-mono font-black">{currentTime.toLocaleTimeString('id-ID')} WIB</span>
+                                                <div className={`text-xs font-mono font-bold px-3 py-1 rounded-full border shadow ${isDarkMode ? 'bg-slate-950 border-slate-800 text-emerald-400' : 'bg-slate-50 border-slate-200 text-emerald-700'}`}>
+                                                    ⏰ Jam Saat Ini: <span className={`font-mono font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{currentTime.toLocaleTimeString('id-ID')} WIB</span>
                                                 </div>
                                             </div>
 
                                             <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'subuh' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                <div className={`p-3 rounded-xl border transition ${nextPrayerKey === 'subuh' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30 ${isDarkMode ? 'bg-slate-950' : 'bg-emerald-50/50'}` : isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                                                     <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'subuh' ? currentStyle.textAccent : 'text-slate-500'}`}>
                                                         Subuh {nextPrayerKey === 'subuh' && '✦'}
                                                     </div>
-                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.subuh}</div>
+                                                    <div className={`font-mono font-black text-base mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prayerSchedule.subuh}</div>
                                                 </div>
 
-                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'dzuhur' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                <div className={`p-3 rounded-xl border transition ${nextPrayerKey === 'dzuhur' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30 ${isDarkMode ? 'bg-slate-950' : 'bg-emerald-50/50'}` : isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                                                     <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'dzuhur' ? currentStyle.textAccent : 'text-slate-500'}`}>
                                                         Dzuhur {nextPrayerKey === 'dzuhur' && '✦'}
                                                     </div>
-                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.dzuhur}</div>
+                                                    <div className={`font-mono font-black text-base mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prayerSchedule.dzuhur}</div>
                                                 </div>
 
-                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'ashar' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                <div className={`p-3 rounded-xl border transition ${nextPrayerKey === 'ashar' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30 ${isDarkMode ? 'bg-slate-950' : 'bg-emerald-50/50'}` : isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                                                     <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'ashar' ? currentStyle.textAccent : 'text-slate-500'}`}>
                                                         Ashar {nextPrayerKey === 'ashar' && '✦'}
                                                     </div>
-                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.ashar}</div>
+                                                    <div className={`font-mono font-black text-base mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prayerSchedule.ashar}</div>
                                                 </div>
 
-                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'maghrib' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                <div className={`p-3 rounded-xl border transition ${nextPrayerKey === 'maghrib' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30 ${isDarkMode ? 'bg-slate-950' : 'bg-emerald-50/50'}` : isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                                                     <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'maghrib' ? currentStyle.textAccent : 'text-slate-500'}`}>
                                                         Maghrib {nextPrayerKey === 'maghrib' && '✦'}
                                                     </div>
-                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.maghrib}</div>
+                                                    <div className={`font-mono font-black text-base mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prayerSchedule.maghrib}</div>
                                                 </div>
 
-                                                <div className={`p-3 rounded-xl bg-slate-950 border transition ${nextPrayerKey === 'isya' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30` : 'border-slate-800'}`}>
+                                                <div className={`p-3 rounded-xl border transition ${nextPrayerKey === 'isya' ? `${currentStyle.borderAccent} shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-500/30 ${isDarkMode ? 'bg-slate-950' : 'bg-emerald-50/50'}` : isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                                                     <div className={`text-[10px] font-extrabold uppercase ${nextPrayerKey === 'isya' ? currentStyle.textAccent : 'text-slate-500'}`}>
                                                         Isya {nextPrayerKey === 'isya' && '✦'}
                                                     </div>
-                                                    <div className="font-mono font-black text-white text-base mt-0.5">{prayerSchedule.isya}</div>
+                                                    <div className={`font-mono font-black text-base mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{prayerSchedule.isya}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -397,16 +409,16 @@ export default function PublicMosjidPage() {
 
                         {/* SECTION 3: PROFIL SECTION (MIHRAB ARCH STYLING) */}
                         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 hover:border-amber-500/30 transition shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className={`p-8 sm:p-12 rounded-3xl border transition shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 ${isDarkMode ? 'bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border-slate-800 hover:border-amber-500/30' : 'bg-white border-slate-200/80 hover:border-amber-500/40 shadow-lg'}`}>
                                 <div className="absolute top-0 left-0 w-32 h-1 bg-gradient-to-r from-emerald-500 to-amber-500"></div>
                                 <div className="space-y-4 max-w-2xl">
                                     <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold ${currentStyle.badge}`}>
                                         <span>🕌 Profil &amp; Sejarah</span>
                                     </div>
-                                    <h3 className="text-2xl sm:text-3xl font-black text-white">
+                                    <h3 className={`text-2xl sm:text-3xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                                         Mengenal {masjid.name}
                                     </h3>
-                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                    <p className={`text-xs sm:text-sm leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                                         {info.description || `Portal informasi resmi kegiatan ibadah, sejarah, visi misi, serta sarana prasarana ${masjid.name}.`}
                                     </p>
                                 </div>
@@ -423,12 +435,12 @@ export default function PublicMosjidPage() {
                         {/* SECTION 4: PROGRAM & DONASI SECTION */}
                         {showDonations && (
                             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-950 border border-emerald-500/30 space-y-6 shadow-xl relative overflow-hidden">
+                                <div className={`p-8 sm:p-12 rounded-3xl border space-y-6 shadow-xl relative overflow-hidden transition-colors ${isDarkMode ? 'bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-950 border-emerald-500/30' : 'bg-white border-emerald-500/30 shadow-lg'}`}>
                                     <div className="absolute top-0 right-0 w-48 h-1 bg-gradient-to-l from-amber-500 to-transparent"></div>
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                                    <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
                                         <div>
                                             <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Infaq &amp; Shadaqah Jariyah</span>
-                                            <h3 className="text-2xl font-black text-white">Program Donasi Masjid</h3>
+                                            <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Program Donasi Masjid</h3>
                                         </div>
                                         <Link
                                             to={`/m/${slug}/donasi`}
@@ -440,15 +452,15 @@ export default function PublicMosjidPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 hover:border-amber-500/30 transition">
-                                            <div className="text-xs font-bold text-slate-400">Rekening Bank Syariah Indonesia (BSI)</div>
+                                        <div className={`p-6 rounded-2xl border space-y-2 transition ${isDarkMode ? 'bg-slate-950/80 border-slate-800 hover:border-amber-500/30' : 'bg-slate-50 border-slate-200 hover:border-amber-500/40'}`}>
+                                            <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Rekening Bank Syariah Indonesia (BSI)</div>
                                             <div className={`text-2xl font-black font-mono ${currentStyle.textAccent}`}>7700-1234-5678</div>
-                                            <div className="text-xs text-slate-400">a.n DKM {masjid.name}</div>
+                                            <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>a.n DKM {masjid.name}</div>
                                         </div>
 
-                                        <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 hover:border-emerald-500/30 transition">
-                                            <div className="text-xs font-bold text-slate-400">Scan QRIS Direct Infaq</div>
-                                            <div className="text-xs text-slate-300 leading-relaxed">
+                                        <div className={`p-6 rounded-2xl border space-y-2 transition ${isDarkMode ? 'bg-slate-950/80 border-slate-800 hover:border-emerald-500/30' : 'bg-slate-50 border-slate-200 hover:border-emerald-500/40'}`}>
+                                            <div className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Scan QRIS Direct Infaq</div>
+                                            <div className={`text-xs leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                                                 Menerima donasi via GoPay, OVO, Dana, ShopeePay, &amp; Mobile Banking tanpa biaya transaksi.
                                             </div>
                                         </div>
@@ -460,10 +472,10 @@ export default function PublicMosjidPage() {
                         {/* SECTION 5: BERITA & KAJIAN SECTION */}
                         {showPosts && (
                             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                                <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                                <div className={`flex items-center justify-between border-b pb-3 ${isDarkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                                     <div>
                                         <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Dakwah &amp; Agenda Keilmuan</span>
-                                        <h3 className="text-2xl font-black text-white">Berita &amp; Kajian Terbaru</h3>
+                                        <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Berita &amp; Kajian Terbaru</h3>
                                     </div>
                                     <Link
                                         to={`/m/${slug}/berita`}
@@ -477,16 +489,16 @@ export default function PublicMosjidPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {recent_posts && recent_posts.length > 0 ? (
                                         recent_posts.map((post) => (
-                                            <div key={post.id} className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3 hover:border-amber-500/30 transition shadow-lg">
+                                            <div key={post.id} className={`p-6 rounded-3xl border space-y-3 transition shadow-lg ${isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-amber-500/30' : 'bg-white border-slate-200 hover:border-amber-500/40'}`}>
                                                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">
                                                     {post.category || 'Kajian'}
                                                 </span>
-                                                <h4 className="font-bold text-base text-white leading-snug">{post.title}</h4>
-                                                <p className="text-xs text-slate-400 line-clamp-2">{post.content}</p>
+                                                <h4 className={`font-bold text-base leading-snug ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{post.title}</h4>
+                                                <p className={`text-xs line-clamp-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{post.content}</p>
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="col-span-3 p-8 rounded-3xl bg-slate-900 border border-slate-800 text-center text-xs text-slate-400">
+                                        <div className={`col-span-3 p-8 rounded-3xl border text-center text-xs ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
                                             Belum ada jadwal kajian atau berita terbaru yang dipublikasikan.
                                         </div>
                                     )}
@@ -496,25 +508,25 @@ export default function PublicMosjidPage() {
 
                         {/* SECTION 6: LOKASI & KONTAK SECTION */}
                         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 text-center shadow-xl relative overflow-hidden">
+                            <div className={`p-8 sm:p-12 rounded-3xl border space-y-6 text-center shadow-xl relative overflow-hidden transition-colors ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-lg'}`}>
                                 <div className="space-y-2 max-w-xl mx-auto">
                                     <span className={`text-xs font-bold uppercase tracking-widest ${currentStyle.textAccent}`}>Lokasi &amp; Kontak DKM</span>
-                                    <h3 className="text-2xl font-black text-white">Kunjungi &amp; Hubungi Kami</h3>
-                                    <p className="text-xs text-slate-400">
+                                    <h3 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Kunjungi &amp; Hubungi Kami</h3>
+                                    <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                                         {masjid.address ? `${masjid.address}, ${masjid.city || ''}, ${masjid.province || ''}` : 'Alamat masjid belum diatur.'}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-xs">
-                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                                        <div className="text-slate-500 font-bold mb-1">Telepon / WA</div>
-                                        <div className="font-mono font-bold text-white">{masjid.phone || masjid.user?.phone || '-'}</div>
+                                    <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                        <div className={`font-bold mb-1 ${isDarkMode ? 'text-slate-500' : 'text-slate-500'}`}>Telepon / WA</div>
+                                        <div className={`font-mono font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{masjid.phone || masjid.user?.phone || '-'}</div>
                                     </div>
-                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                                        <div className="text-slate-500 font-bold mb-1">Email Official</div>
-                                        <div className="font-mono font-bold text-white">{masjid.email || masjid.user?.email || '-'}</div>
+                                    <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                                        <div className={`font-bold mb-1 ${isDarkMode ? 'text-slate-500' : 'text-slate-500'}`}>Email Official</div>
+                                        <div className={`font-mono font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{masjid.email || masjid.user?.email || '-'}</div>
                                     </div>
-                                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center">
+                                    <div className={`p-4 rounded-2xl border flex items-center justify-center ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                                         <Link to={`/m/${slug}/kontak`} className={`font-bold ${currentStyle.textAccent} hover:underline`}>
                                             Detail Kontak &amp; Peta →
                                         </Link>
@@ -677,15 +689,14 @@ export default function PublicMosjidPage() {
             </div>
 
             {/* Footer */}
-            <footer className="py-8 border-t border-slate-800 text-xs text-slate-400">
+            <footer className={`py-8 border-t text-xs transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-600 shadow-inner'}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex items-center space-x-2">
-                        <span className="font-bold text-white">{masjid.name}</span>
-                        <span>&copy; 2026. Powered by Masjidku SaaS.</span>
+                        <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{masjid.name}</span>
+                        <span>&copy; 2026. Powered by Masjidku.id</span>
                     </div>
                     <div className="flex space-x-6">
-                        {masjid.phone && <span>Telp: {masjid.phone}</span>}
-                        {masjid.email && <span>Email: {masjid.email}</span>}
+                        <Link to="/" className="hover:text-emerald-500">Website Platform Masjidku</Link>
                     </div>
                 </div>
             </footer>
