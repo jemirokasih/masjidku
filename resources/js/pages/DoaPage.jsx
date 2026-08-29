@@ -222,12 +222,6 @@ export default function DoaPage({ embedded = false }) {
                         </button>
 
                         <Link
-                            to="/register"
-                            className={`px-4 py-2 rounded-xl border font-bold text-xs transition ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'}`}
-                        >
-                            Daftar Website
-                        </Link>
-                        <Link
                             to="/login"
                             className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#164134] via-[#1c5242] to-[#226350] hover:from-[#1c5242] hover:to-[#164134] text-white font-bold text-xs shadow-md flex items-center space-x-1.5 transition border border-[#164134]/30"
                         >
