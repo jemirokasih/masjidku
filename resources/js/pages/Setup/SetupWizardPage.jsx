@@ -627,36 +627,48 @@ export default function SetupWizardPage() {
                     {/* STEP 7: Selesai */}
                     {currentStep === 7 && (
                         <div className="text-center py-10 space-y-6">
-                            <div className="w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto shadow-xl">
-                                <ShieldCheck className="w-10 h-10" />
+                            <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 flex items-center justify-center mx-auto shadow-xl">
+                                <CheckCircle2 className="w-10 h-10" />
                             </div>
 
                             <div className="space-y-2 max-w-md mx-auto">
-                                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Setup Selesai — Menunggu Verifikasi Admin</h2>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                    Data setup website masjid Anda telah berhasil disimpan dan saat ini dalam antrean verifikasi tim admin MasjidKu.
+                                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">🎉 Setup Website Berhasil Diselesaikan!</h2>
+                                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs">
+                                    <span>Status: Menunggu Verifikasi Tim Admin</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed pt-1">
+                                    Pengaturan domain, template, dan dokumen verifikasi Anda telah tersimpan dengan aman. Anda dapat melakukan pratinjau tampilan website publik Anda sekarang juga.
                                 </p>
                             </div>
 
                             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-md mx-auto text-left text-xs space-y-2">
                                 <div className="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-                                    <span className="text-slate-500">Subdomain:</span>
-                                    <strong className="font-mono text-emerald-600 dark:text-emerald-400">{formData.masjid_slug}.masjidku.id</strong>
+                                    <span className="text-slate-500">Nama Domain Website:</span>
+                                    <strong className="font-mono text-emerald-600 dark:text-emerald-400">{formData.masjid_slug || 'masjid'}.masjidku.id</strong>
                                 </div>
                                 <div className="flex justify-between pt-1">
-                                    <span className="text-slate-500">Status Verifikasi:</span>
+                                    <span className="text-slate-500">Status Publik:</span>
                                     <span className="text-amber-500 font-bold flex items-center gap-1">
-                                        <AlertCircle className="w-3.5 h-3.5" /> Pending Approval
+                                        ⏳ Menunggu Approve Admin
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="pt-4 max-w-xs mx-auto">
+                            <div className="pt-2 max-w-md mx-auto flex flex-col sm:flex-row items-center justify-center gap-3">
+                                <a
+                                    href={`/m/${formData.masjid_slug || 'alikhlas'}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full sm:w-1/2 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2"
+                                >
+                                    <Globe className="w-4 h-4" />
+                                    <span>Pratinjau Website</span>
+                                </a>
                                 <button
                                     onClick={() => navigate('/')}
-                                    className="w-full py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-xl shadow-emerald-700/30 transition flex items-center justify-center space-x-2"
+                                    className="w-full sm:w-1/2 py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition flex items-center justify-center space-x-2"
                                 >
-                                    <span>Masuk ke Dashboard Masjid</span>
+                                    <span>Ke Dashboard</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
                             </div>

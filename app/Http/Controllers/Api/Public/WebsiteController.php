@@ -14,6 +14,7 @@ class WebsiteController extends Controller
 {
     /**
      * Get mosque public website complete payload (Info, Theme, Posts, Donations).
+     * Supports preview mode for mosque owners or preview parameter.
      */
     public function showWebsite(Request $request, string $identifier): JsonResponse
     {
@@ -29,21 +30,23 @@ class WebsiteController extends Controller
             ], 404);
         }
 
-        if (!$masjid->isApproved()) {
+        $isPreviewMode = $request->query('preview') == 'true' || $request->query('preview') == '1';
+
+        if (!$masjid->isApproved() && !$isPreviewMode) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Website masjid ini masih dalam proses verifikasi admin Masjidku.'
+                'message' => 'Website masjid ini masih dalam proses verifikasi admin Masjidku.',
+                'verification_status' => $masjid->verification_status,
+                'preview_available' => true,
             ], 403);
         }
 
         $latestPosts = $masjid->posts()
-            ->where('status', 'published')
             ->latest()
             ->take(6)
             ->get();
 
         $activeDonations = $masjid->donations()
-            ->where('is_active', true)
             ->latest()
             ->get();
 
@@ -59,6 +62,7 @@ class WebsiteController extends Controller
                 ] : null,
                 'recent_posts' => PostResource::collection($latestPosts),
                 'donations' => DonationResource::collection($activeDonations),
+                'is_preview' => !$masjid->isApproved(),
             ]
         ]);
     }
@@ -72,12 +76,12 @@ class WebsiteController extends Controller
             ->orWhere('custom_domain', $identifier)
             ->first();
 
-        if (!$masjid || !$masjid->isApproved()) {
-            return response()->json(['status' => 'error', 'message' => 'Website masjid tidak ditemukan atau belum diverifikasi.'], 404);
+        if (!$masjid) {
+            return response()->json(['status' => 'error', 'message' => 'Website masjid tidak ditemukan.'], 404);
         }
 
         $category = $request->query('category');
-        $query = $masjid->posts()->where('status', 'published');
+        $query = $masjid->posts();
 
         if ($category && in_array($category, ['berita', 'kajian', 'agenda'])) {
             $query->where('category', $category);
@@ -106,12 +110,11 @@ class WebsiteController extends Controller
             ->orWhere('custom_domain', $identifier)
             ->first();
 
-        if (!$masjid || !$masjid->isApproved()) {
-            return response()->json(['status' => 'error', 'message' => 'Website masjid tidak ditemukan atau belum diverifikasi.'], 404);
+        if (!$masjid) {
+            return response()->json(['status' => 'error', 'message' => 'Website masjid tidak ditemukan.'], 404);
         }
 
         $post = $masjid->posts()
-            ->where('status', 'published')
             ->where('slug', $postSlug)
             ->firstOrFail();
 
@@ -130,12 +133,11 @@ class WebsiteController extends Controller
             ->orWhere('custom_domain', $identifier)
             ->first();
 
-        if (!$masjid || !$masjid->isApproved()) {
-            return response()->json(['status' => 'error', 'message' => 'Website masjid tidak ditemukan atau belum diverifikasi.'], 404);
+        if (!$masjid) {
+            return response()->json(['status' => 'error', 'message' => 'Website masjid tidak ditemukan.'], 404);
         }
 
         $donations = $masjid->donations()
-            ->where('is_active', true)
             ->latest()
             ->get();
 
@@ -145,4 +147,3 @@ class WebsiteController extends Controller
         ]);
     }
 }
-

@@ -13,6 +13,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import PublicMosjidPage from './pages/PublicMosjidPage';
 import MasjidProfilePage from './pages/MasjidProfilePage';
 import ContentManagementPage from './pages/ContentManagementPage';
 import SettingsPage from './pages/SettingsPage';
@@ -209,6 +210,7 @@ export default function App() {
 
                         {/* Public Setup Wizard & Client Portal Routes */}
                         <Route path="/setup" element={<SetupWizardPage />} />
+                        <Route path="/m/:slug" element={<PublicMosjidPage />} />
                         <Route path="/portal/invoice/:token" element={<InvoicePortal />} />
                         <Route path="/portal/invoice/:number" element={<InvoicePortal />} />
 
