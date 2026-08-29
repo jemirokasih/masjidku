@@ -178,9 +178,6 @@ export default function DoaPage({ embedded = false }) {
                         <Link to="/m/alikhlas/berita" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
                             Berita &amp; Kajian
                         </Link>
-                        <Link to="/m/alikhlas/donasi" className={`py-5 transition ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}>
-                            Donasi QRIS
-                        </Link>
 
                         {/* Dropdown Menu: Sumber Daya */}
                         <div className="relative py-5 group">

@@ -283,14 +283,6 @@ export default function PublicMosjidPage() {
                                     Berita & Kajian
                                 </Link>
                             )}
-                            {showDonations && (
-                                <Link 
-                                    to={`/m/${slug}/donasi`} 
-                                    className={`py-5 transition ${activeSubPage === 'donasi' ? currentStyle.navActive : isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
-                                >
-                                    Donasi QRIS
-                                </Link>
-                            )}
                             {/* Dropdown Menu: Sumber Daya (Al-Qur'an & Doa Harian) */}
                             <div 
                                 className="relative py-5" 
