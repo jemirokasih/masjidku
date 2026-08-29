@@ -9,6 +9,7 @@ import MainLayout from './layouts/MainLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -159,6 +160,25 @@ const PublicRoute = ({ children }) => {
     return children;
 };
 
+// Root Route Handler (shows LandingPage for guests, MainLayout for authenticated users)
+const RootRoute = () => {
+    const { isAuthenticated, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 dark:bg-[#070a12] flex items-center justify-center text-slate-500 text-xs">
+                <span>Memuat Masjidku...</span>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return <LandingPage />;
+    }
+
+    return <MainLayout />;
+};
+
 export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
@@ -167,6 +187,7 @@ export default function App() {
                     <ConfirmProvider>
                         <BrowserRouter>
                             <Routes>
+                                <Route path="/landing" element={<LandingPage />} />
                                 <Route
                                     path="/login"
                                     element={
@@ -189,16 +210,8 @@ export default function App() {
                         <Route path="/portal/invoice/:token" element={<InvoicePortal />} />
                         <Route path="/portal/invoice/:number" element={<InvoicePortal />} />
 
-
-                        {/* Protected App Routes */}
-                        <Route
-                            path="/"
-                            element={
-                                <ProtectedRoute>
-                                    <MainLayout />
-                                </ProtectedRoute>
-                            }
-                        >
+                        {/* App Routes */}
+                        <Route path="/" element={<RootRoute />}>
                             <Route index element={<Dashboard />} />
                             <Route path="clients" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientList /></ProtectedRoute>} />
                             <Route path="clients/create" element={<ProtectedRoute requiredRoles={['admin', 'finance', 'project_manager']}><ClientFormPage /></ProtectedRoute>} />

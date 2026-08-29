@@ -11,56 +11,50 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     /**
-     * Register a new Mosque Admin (Pengurus Masjid) and submit mosque for verification.
+     * Register a new Mosque Admin (Simplified: Name, Email, Phone).
      */
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
-            'masjid_name' => 'required|string|max:255',
-            'masjid_slug' => 'required|string|max:100|alpha_dash|unique:masjids,slug',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:100',
-            'province' => 'nullable|string|max:100',
-            'verification_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'phone' => 'required|string|max:20',
+            'password' => 'nullable|string|min:6',
+            'masjid_name' => 'nullable|string|max:255',
+            'masjid_slug' => 'nullable|string|max:100|alpha_dash|unique:masjids,slug',
         ]);
+
+        $rawPassword = $validated['password'] ?? 'password123';
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($rawPassword),
             'role' => 'pengurus_masjid',
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'],
         ]);
-
-        $documentPath = null;
-        if ($request->hasFile('verification_document')) {
-            $documentPath = $request->file('verification_document')->store('verification_docs', 'public');
-        }
 
         // Get default theme
         $defaultTheme = Theme::where('slug', 'default-clean')->first() ?? Theme::where('is_free', true)->first();
 
+        $masjidName = $validated['masjid_name'] ?? ('Masjid ' . $validated['name']);
+        $baseSlug = $validated['masjid_slug'] ?? Str::slug($masjidName);
+        if (!$baseSlug || Masjid::where('slug', $baseSlug)->exists()) {
+            $baseSlug = Str::slug($masjidName) . '-' . Str::random(4);
+        }
+
         $masjid = Masjid::create([
             'user_id' => $user->id,
-            'name' => $validated['masjid_name'],
-            'slug' => Str::slug($validated['masjid_slug']),
-            'address' => $validated['address'] ?? null,
-            'city' => $validated['city'] ?? null,
-            'province' => $validated['province'] ?? null,
-            'phone' => $validated['phone'] ?? null,
+            'name' => $masjidName,
+            'slug' => $baseSlug,
+            'phone' => $validated['phone'],
             'email' => $validated['email'],
             'verification_status' => 'pending',
-            'verification_document' => $documentPath,
             'active_theme_id' => $defaultTheme?->id,
         ]);
 
@@ -73,12 +67,13 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Registrasi berhasil. Data masjid Anda telah diajukan dan sedang menunggu verifikasi admin Masjidku.',
+            'message' => 'Registrasi berhasil! Akun Anda telah aktif dan dapat langsung digunakan.',
             'data' => [
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'phone' => $user->phone,
                     'role' => $user->role,
                 ],
                 'masjid' => new MasjidResource($masjid->load(['info', 'activeTheme'])),
@@ -117,6 +112,7 @@ class AuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'phone' => $user->phone,
                     'role' => $user->role,
                 ],
                 'masjid' => $user->masjid ? new MasjidResource($user->masjid) : null,
@@ -162,4 +158,3 @@ class AuthController extends Controller
         ]);
     }
 }
-
