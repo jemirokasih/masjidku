@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import api from '../api/axios';
+import QuranPage from './QuranPage';
+import DoaPage from './DoaPage';
 import { 
     Globe, HeartHandshake, BookOpenCheck, Calendar, Clock, 
     MapPin, Phone, Mail, ShieldAlert, ArrowLeft, RefreshCw, 
@@ -420,7 +422,17 @@ export default function PublicMosjidPage() {
                     </div>
                 )}
 
-                {/* PAGE 5: LOKASI & KONTAK */}
+                {/* PAGE 5: AL-QURAN DIGITAL */}
+                {activeSubPage === 'quran' && (
+                    <QuranPage embedded={true} />
+                )}
+
+                {/* PAGE 6: DOA HARIAN & DZIKIR */}
+                {activeSubPage === 'doa' && (
+                    <DoaPage embedded={true} />
+                )}
+
+                {/* PAGE 7: LOKASI & KONTAK */}
                 {activeSubPage === 'kontak' && (
                     <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
                         <div className="text-center space-y-2 max-w-2xl mx-auto">
