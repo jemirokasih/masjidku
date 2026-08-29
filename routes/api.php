@@ -43,7 +43,9 @@ Route::prefix('v1/tenant')->middleware(['auth:sanctum', 'check_role:pengurus_mas
     // Mosque Profile & Info Settings
     Route::get('/masjid', [MasjidProfileController::class, 'show']);
     Route::put('/masjid', [MasjidProfileController::class, 'update']);
+    Route::post('/masjid', [MasjidProfileController::class, 'update']);
     Route::put('/masjid/info', [MasjidProfileController::class, 'updateInfo']);
+    Route::post('/masjid/info', [MasjidProfileController::class, 'updateInfo']);
 
     // Berita & Update Kajian / Agenda
     Route::apiResource('/posts', PostController::class);

@@ -13,44 +13,70 @@ export default function SetupWizardPage() {
     const { user } = useAuth();
 
     const [currentStep, setCurrentStep] = useState(1);
+    const [loadingData, setLoadingData] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [checkingDomain, setCheckingDomain] = useState(false);
     const [domainAvailable, setDomainAvailable] = useState(null);
 
     // Form State for 7 Setup Steps
     const [formData, setFormData] = useState({
-        masjid_slug: user?.masjid?.slug || '',
-        active_theme_id: user?.masjid?.active_theme_id || 1,
-        masjid_name: user?.masjid?.name || '',
-        email: user?.masjid?.email || user?.email || '',
-        address: user?.masjid?.address || '',
-        phone: user?.masjid?.phone || user?.phone || '',
+        masjid_slug: '',
+        active_theme_id: 1,
+        masjid_name: '',
+        email: '',
+        address: '',
+        phone: '',
         description: '',
-        province: user?.masjid?.province || '',
-        city: user?.masjid?.city || '',
+        province: '',
+        city: '',
         district: '',
         village: '',
-        postal_code: user?.masjid?.postal_code || '',
+        postal_code: '',
         agreed_terms: false,
-        package_plan: 'free', // 'free' or 'pro'
+        package_plan: 'free',
     });
 
     const [skFile, setSkFile] = useState(null);
     const [wakafFile, setWakafFile] = useState(null);
-
     const [themesList, setThemesList] = useState([]);
 
+    // Fetch existing masjid data on mount
     useEffect(() => {
-        const fetchThemes = async () => {
+        const fetchInitialData = async () => {
+            setLoadingData(true);
             try {
-                const res = await api.get('/tenant/themes');
-                setThemesList(res.data.data || []);
+                const [themesRes, masjidRes] = await Promise.all([
+                    api.get('/tenant/themes'),
+                    api.get('/tenant/masjid')
+                ]);
+
+                setThemesList(themesRes.data.data || []);
+
+                const m = masjidRes.data.data;
+                if (m) {
+                    setFormData(prev => ({
+                        ...prev,
+                        masjid_slug: m.slug || '',
+                        active_theme_id: m.active_theme_id || m.active_theme?.id || 1,
+                        masjid_name: m.name || '',
+                        email: m.email || user?.email || '',
+                        address: m.address || '',
+                        phone: m.phone || user?.phone || '',
+                        city: m.city || '',
+                        province: m.province || '',
+                        postal_code: m.postal_code || '',
+                        description: m.info?.description || '',
+                    }));
+                }
             } catch (err) {
-                console.error('Failed to fetch themes', err);
+                console.error('Failed to load initial setup data', err);
+            } finally {
+                setLoadingData(false);
             }
         };
-        fetchThemes();
-    }, []);
+
+        fetchInitialData();
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -69,87 +95,93 @@ export default function SetupWizardPage() {
         setDomainAvailable(null);
 
         try {
-            // Check domain via public API
-            const res = await api.get(`/public/masjid/${formData.masjid_slug}`);
-            // If exists & not own masjid
+            const res = await api.get(`/public/masjid/${formData.masjid_slug}?preview=1`);
             if (res.data?.data?.masjid && res.data.data.masjid.id !== user?.masjid?.id) {
                 setDomainAvailable(false);
             } else {
                 setDomainAvailable(true);
             }
         } catch (err) {
-            // 404 means available
             setDomainAvailable(true);
         } finally {
             setCheckingDomain(false);
         }
     };
 
-    const handleNextStep = () => {
-        if (currentStep === 1 && !formData.masjid_slug) {
-            alert('Harap isi nama domain terlebih dahulu.');
-            return;
-        }
-        if (currentStep === 3 && (!formData.masjid_name || !formData.email || !formData.address)) {
-            alert('Harap isi Nama Masjid, Email, dan Alamat Lengkap.');
-            return;
-        }
-        if (currentStep === 5 && !formData.agreed_terms) {
-            alert('Anda harus menyetujui Syarat & Ketentuan untuk melanjutkan.');
-            return;
-        }
-        if (currentStep === 6) {
-            // Submit form to API
-            handleSubmitSetup();
-            return;
-        }
-        setCurrentStep(prev => Math.min(prev + 1, 7));
-    };
-
-    const handlePrevStep = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 1));
-    };
-
-    const handleSubmitSetup = async () => {
+    const saveCurrentStepData = async () => {
         setSubmitting(true);
         try {
+            // Send FormData via POST (compatible with multipart in Laravel)
             const data = new FormData();
-            data.append('name', formData.masjid_name);
-            data.append('slug', formData.masjid_slug);
-            data.append('address', formData.address);
-            data.append('city', formData.city);
-            data.append('province', formData.province);
-            data.append('postal_code', formData.postal_code);
-            data.append('phone', formData.phone);
-            data.append('email', formData.email);
+            if (formData.masjid_name) data.append('name', formData.masjid_name);
+            if (formData.masjid_slug) data.append('slug', formData.masjid_slug);
+            if (formData.address) data.append('address', formData.address);
+            if (formData.city) data.append('city', formData.city);
+            if (formData.province) data.append('province', formData.province);
+            if (formData.postal_code) data.append('postal_code', formData.postal_code);
+            if (formData.phone) data.append('phone', formData.phone);
+            if (formData.email) data.append('email', formData.email);
 
             if (skFile) {
                 data.append('verification_document', skFile);
             }
 
-            // Update basic profile
-            await api.put('/tenant/masjid', data, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            // Save basic profile
+            await api.post('/tenant/masjid', data);
 
-            // Update detailed info
-            await api.put('/tenant/masjid/info', {
-                description: formData.description,
-            });
+            // Save detailed info
+            if (formData.description) {
+                await api.post('/tenant/masjid/info', {
+                    description: formData.description,
+                });
+            }
 
-            // Select theme
+            // Save selected theme
             if (formData.active_theme_id) {
                 await api.post('/tenant/themes/select', {
                     theme_id: formData.active_theme_id
                 });
             }
-
-            setCurrentStep(7);
         } catch (err) {
-            alert('Gagal menyimpan setup: ' + (err.response?.data?.message || err.message));
+            console.error('Save step failed:', err);
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleNextStep = async () => {
+        if (currentStep === 1) {
+            if (!formData.masjid_slug) {
+                alert('Harap isi nama domain terlebih dahulu.');
+                return;
+            }
+            await saveCurrentStepData();
+        } else if (currentStep === 2) {
+            await saveCurrentStepData();
+        } else if (currentStep === 3) {
+            if (!formData.masjid_name || !formData.email || !formData.address) {
+                alert('Harap isi Nama Masjid, Email, dan Alamat Lengkap.');
+                return;
+            }
+            await saveCurrentStepData();
+        } else if (currentStep === 4) {
+            await saveCurrentStepData();
+        } else if (currentStep === 5) {
+            if (!formData.agreed_terms) {
+                alert('Anda harus menyetujui Syarat & Ketentuan untuk melanjutkan.');
+                return;
+            }
+        } else if (currentStep === 6) {
+            await saveCurrentStepData();
+            setCurrentStep(7);
+            return;
+        }
+
+        setCurrentStep(prev => Math.min(prev + 1, 7));
+    };
+
+    const handlePrevStep = () => {
+        setCurrentStep(prev => Math.max(prev - 1, 1));
     };
 
     const steps = [
@@ -162,10 +194,19 @@ export default function SetupWizardPage() {
         { id: 7, label: 'Selesai' },
     ];
 
+    if (loadingData) {
+        return (
+            <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6">
+                <RefreshCw className="w-8 h-8 text-emerald-500 animate-spin mb-3" />
+                <span className="text-sm font-semibold text-slate-400">Memuat data setup masjid Anda...</span>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-slate-100 dark:bg-[#070a12] text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-600 selection:text-white">
             
-            {/* Header matching vercel design (Dark Emerald Header) */}
+            {/* Header */}
             <header className="bg-[#064e3b] text-white px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
                 <div className="flex items-center space-x-3">
                     <Link to="/" className="px-3 py-1.5 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-xs font-semibold text-white flex items-center space-x-1.5 transition">
@@ -284,6 +325,7 @@ export default function SetupWizardPage() {
                                 </button>
                                 <button
                                     onClick={handleNextStep}
+                                    disabled={submitting}
                                     className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-700/20 flex items-center space-x-2 transition"
                                 >
                                     <span>Lanjutkan</span>
@@ -359,7 +401,7 @@ export default function SetupWizardPage() {
                                 <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
                                     Kembali
                                 </button>
-                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                <button onClick={handleNextStep} disabled={submitting} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
                                     <span>Lanjutkan</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
@@ -453,7 +495,7 @@ export default function SetupWizardPage() {
                                 <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
                                     Kembali
                                 </button>
-                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                <button onClick={handleNextStep} disabled={submitting} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
                                     <span>Lanjutkan</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
@@ -494,7 +536,7 @@ export default function SetupWizardPage() {
                                 <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
                                     Kembali
                                 </button>
-                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                <button onClick={handleNextStep} disabled={submitting} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
                                     <span>Lanjutkan</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
@@ -539,7 +581,7 @@ export default function SetupWizardPage() {
                                 <button onClick={handlePrevStep} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs">
                                     Kembali
                                 </button>
-                                <button onClick={handleNextStep} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
+                                <button onClick={handleNextStep} disabled={submitting} className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-md flex items-center space-x-2">
                                     <span>Lanjutkan</span>
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
