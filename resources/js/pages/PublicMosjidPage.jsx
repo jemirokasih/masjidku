@@ -6,7 +6,7 @@ import DoaPage from './DoaPage';
 import { 
     Globe, HeartHandshake, BookOpenCheck, Calendar, Clock, 
     MapPin, Phone, Mail, ShieldAlert, ArrowLeft, RefreshCw, 
-    CreditCard, ExternalLink, CheckCircle2, Sparkles, Building, Info, MessageSquare
+    CreditCard, ExternalLink, CheckCircle2, Sparkles, Building, Info, MessageSquare, ChevronRight
 } from 'lucide-react';
 
 export default function PublicMosjidPage() {
